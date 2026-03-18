@@ -1,0 +1,449 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>鼠标选购指南｜8页速通</title>
+  <style>
+    :root{
+      --bg:#f7f5ef;         /* paper */
+      --ink:#121417;        /* deep ink */
+      --muted:#5d6672;
+      --card:#ffffff;
+      --line:rgba(18,20,23,.10);
+      --accent:#2563eb;     /* blue */
+      --accent2:#d97706;    /* amber */
+      --good:#16a34a;
+      --warn:#b45309;
+      --bad:#dc2626;
+      --shadow: 0 16px 50px rgba(18,20,23,.10);
+      --radius:18px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", Arial;
+      color:var(--ink);
+      background: radial-gradient(1200px 700px at 20% 10%, rgba(37,99,235,.12), transparent 60%),
+                  radial-gradient(900px 600px at 80% 30%, rgba(217,119,6,.10), transparent 55%),
+                  var(--bg);
+      overflow:hidden;
+    }
+    .deck{height:100vh; width:100vw; display:flex;}
+
+    /* left rail */
+    .rail{
+      width:340px; flex:0 0 340px;
+      padding:28px 22px;
+      border-right:1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255,255,255,.55), rgba(255,255,255,.20));
+      backdrop-filter: blur(10px);
+    }
+    .brand{
+      display:flex; gap:12px; align-items:center; margin-bottom:18px;
+    }
+    .logo{
+      width:44px; height:44px; border-radius:14px;
+      background: conic-gradient(from 180deg, var(--accent), #1f2937, var(--accent2));
+      box-shadow: 0 10px 25px rgba(37,99,235,.18);
+    }
+    .brand h1{font-size:16px; margin:0; letter-spacing:.2px}
+    .brand p{margin:2px 0 0 0; color:var(--muted); font-size:12px}
+
+    .toc{margin-top:14px; display:flex; flex-direction:column; gap:8px}
+    .toc button{
+      all:unset;
+      cursor:pointer;
+      padding:10px 12px;
+      border-radius:12px;
+      border:1px solid transparent;
+      color:var(--ink);
+      display:flex; gap:10px; align-items:flex-start;
+    }
+    .toc button:hover{background:rgba(37,99,235,.08)}
+    .toc button.active{background:rgba(37,99,235,.10); border-color:rgba(37,99,235,.25)}
+    .toc .idx{width:22px; height:22px; border-radius:8px; display:grid; place-items:center;
+      font-size:12px; color:#fff; background:var(--accent);
+      margin-top:1px;
+    }
+    .toc .t{font-size:13px; line-height:1.2}
+    .toc .s{font-size:11px; color:var(--muted); margin-top:2px}
+
+    .hint{
+      position:absolute; left:22px; bottom:18px; width:296px;
+      padding:12px 12px; border-radius:14px;
+      border:1px dashed rgba(18,20,23,.18);
+      color:var(--muted);
+      font-size:12px;
+      background:rgba(255,255,255,.35);
+    }
+    .kbd{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono";
+      padding:2px 6px; border:1px solid rgba(18,20,23,.20); border-bottom-width:2px; border-radius:8px; color:var(--ink);
+      background:rgba(255,255,255,.7);
+    }
+
+    /* stage */
+    .stage{flex:1; padding:36px; position:relative;}
+    .slide{
+      height:calc(100vh - 72px);
+      border-radius:28px;
+      background: rgba(255,255,255,.78);
+      border:1px solid rgba(18,20,23,.10);
+      box-shadow: var(--shadow);
+      padding:34px 34px;
+      display:none;
+      overflow:hidden;
+      position:relative;
+    }
+    .slide.active{display:block;}
+
+    .topline{display:flex; justify-content:space-between; align-items:center; margin-bottom:18px}
+    .tag{
+      font-size:12px; color:var(--muted);
+      border:1px solid rgba(18,20,23,.12);
+      background:rgba(255,255,255,.65);
+      padding:6px 10px; border-radius:999px;
+    }
+    .page{font-size:12px; color:var(--muted)}
+
+    h2{margin:0; font-size:34px; letter-spacing:-.4px; line-height:1.12}
+    .sub{margin-top:10px; color:var(--muted); font-size:16px; line-height:1.5; max-width:980px}
+
+    .grid{display:grid; gap:14px; margin-top:22px}
+    .grid.cols2{grid-template-columns: 1.15fr .85fr;}
+    .grid.cols3{grid-template-columns: repeat(3, 1fr);}
+
+    .card{
+      border-radius: var(--radius);
+      background: var(--card);
+      border:1px solid rgba(18,20,23,.10);
+      padding:16px 16px;
+      box-shadow: 0 10px 24px rgba(18,20,23,.06);
+    }
+    .card h3{margin:0 0 8px 0; font-size:15px}
+    .card p{margin:0; color:var(--muted); font-size:13px; line-height:1.45}
+    .pill{
+      display:inline-flex; align-items:center; gap:8px;
+      font-size:12px; padding:6px 10px; border-radius:999px;
+      border:1px solid rgba(18,20,23,.12);
+      background:rgba(37,99,235,.06);
+      color:rgba(18,20,23,.92);
+    }
+    .dot{width:8px; height:8px; border-radius:50%; background:var(--accent)}
+    .dot.amber{background:var(--accent2)}
+    .dot.good{background:var(--good)}
+
+    /* table */
+    table{width:100%; border-collapse:separate; border-spacing:0; overflow:hidden; border-radius:18px; border:1px solid rgba(18,20,23,.10);}
+    th, td{padding:12px 12px; font-size:13px; text-align:left; border-bottom:1px solid rgba(18,20,23,.08); background:#fff;}
+    th{background:rgba(37,99,235,.06); color:rgba(18,20,23,.90); font-weight:700}
+    tr:last-child td{border-bottom:none;}
+    .muted{color:var(--muted)}
+
+    /* quote */
+    .quote{
+      margin-top:22px;
+      padding:22px 22px;
+      border-radius:22px;
+      background: linear-gradient(135deg, rgba(37,99,235,.10), rgba(217,119,6,.10));
+      border:1px solid rgba(18,20,23,.10);
+      font-size:22px;
+      line-height:1.35;
+      letter-spacing:-.2px;
+      max-width:1040px;
+    }
+    .quote small{display:block; margin-top:10px; color:var(--muted); font-size:13px}
+
+    /* footer nav */
+    .nav{
+      position:absolute; right:36px; bottom:26px;
+      display:flex; gap:10px; align-items:center;
+    }
+    .nav button{
+      cursor:pointer;
+      border-radius:14px;
+      border:1px solid rgba(18,20,23,.14);
+      background:rgba(255,255,255,.75);
+      padding:10px 12px;
+      font-size:13px;
+      color:var(--ink);
+    }
+    .nav button:hover{background:#fff}
+
+    /* responsive */
+    @media (max-width: 1120px){
+      .rail{display:none}
+      .stage{padding:16px}
+      .slide{height:calc(100vh - 32px); padding:20px}
+      h2{font-size:26px}
+    }
+  </style>
+</head>
+<body>
+  <div class="deck">
+    <aside class="rail">
+      <div class="brand">
+        <div class="logo" aria-hidden="true"></div>
+        <div>
+          <h1>鼠标选购指南</h1>
+          <p>8 页速通：从需求到下单</p>
+        </div>
+      </div>
+      <div class="toc" id="toc"></div>
+      <div class="hint">
+        操作：<span class="kbd">←</span>/<span class="kbd">→</span> 或 <span class="kbd">A</span>/<span class="kbd">D</span> 翻页；<span class="kbd">Esc</span> 显示/隐藏目录。
+      </div>
+    </aside>
+
+    <main class="stage">
+      <!-- 1 title -->
+      <section class="slide active" data-title="封面" data-sub="8页速通：从需求到下单">
+        <div class="topline"><span class="tag">购买决策卡｜2026</span><span class="page">01 / 08</span></div>
+        <h2>鼠标选购指南</h2>
+        <p class="sub">别从“型号”开始选——先把 <b>场景、手感、重量、连接方式、预算</b> 定清楚，再看传感器与细节配置。</p>
+        <div class="grid cols3">
+          <div class="card">
+            <h3>你属于哪类用户？</h3>
+            <p>办公 / 便携 / FPS / MOBA / 设计剪辑 / 大手小手。</p>
+          </div>
+          <div class="card">
+            <h3>一句话原则</h3>
+            <p>优先：<b>握持舒适</b> ＞ <b>重量&平衡</b> ＞ <b>连接稳定</b> ＞ “堆参数”。</p>
+          </div>
+          <div class="card">
+            <h3>常见误区</h3>
+            <p>只看 DPI、只看牌子、忽略尺寸/握法，最终都变成“抽屉鼠标”。</p>
+          </div>
+        </div>
+        <div class="nav"><button id="prev1">上一页</button><button id="next1">下一页</button></div>
+      </section>
+
+      <!-- 2 divider -->
+      <section class="slide" data-title="先定需求" data-sub="三问定方向">
+        <div class="topline"><span class="tag">Chapter 1</span><span class="page">02 / 08</span></div>
+        <h2>先回答 3 个问题</h2>
+        <p class="sub">把鼠标当成“手的延伸”。你要的不是参数，而是 <b>可持续的舒适 + 稳定的控制</b>。</p>
+        <div class="grid cols3">
+          <div class="card">
+            <h3>① 主要场景</h3>
+            <p><span class="pill"><span class="dot"></span>办公</span> <span class="pill"><span class="dot amber"></span>便携</span> <span class="pill"><span class="dot good"></span>游戏</span></p>
+            <p style="margin-top:10px">不同场景决定：尺寸、滚轮、按键数、连接、续航优先级。</p>
+          </div>
+          <div class="card">
+            <h3>② 握法&手型</h3>
+            <p>趴握 / 抓握 / 指握 + 手长手宽。</p>
+            <p style="margin-top:10px">同一型号对不同手型“天差地别”。优先试握或看尺寸图。</p>
+          </div>
+          <div class="card">
+            <h3>③ 预算区间</h3>
+            <p>¥100-200：够用</p>
+            <p>¥200-400：体验跃迁</p>
+            <p>¥400+：为特定手感/生态/极致轻量买单</p>
+          </div>
+        </div>
+        <div class="nav"><button>上一页</button><button>下一页</button></div>
+      </section>
+
+      <!-- 3 cards -->
+      <section class="slide" data-title="手感优先" data-sub="握持、尺寸、重量三件套">
+        <div class="topline"><span class="tag">核心维度</span><span class="page">03 / 08</span></div>
+        <h2>手感优先：三件套决定 80% 体验</h2>
+        <p class="sub">你最终会喜欢的鼠标，往往不是“最强参数”，而是最适合你的 <b>握持曲线 + 重量&重心 + 表面摩擦</b>。</p>
+        <div class="grid cols3">
+          <div class="card">
+            <h3>尺寸（长/宽/高）</h3>
+            <p><b>大手</b>避免过小导致手指紧张；<b>小手</b>避免过大导致抬腕/疲劳。</p>
+          </div>
+          <div class="card">
+            <h3>重量（含电池）</h3>
+            <p>办公：75–110g 多数人舒适；FPS：轻量更易甩枪；但太轻会“飘”。</p>
+          </div>
+          <div class="card">
+            <h3>形状（背拱/侧裙）</h3>
+            <p>趴握看背拱支撑；抓握看侧裙贴合；指握更看前端收窄与平衡。</p>
+          </div>
+        </div>
+        <div class="quote">“合适的形状让你越用越稳；不合适的形状让你越用越累。”<small>先把形状选对，再纠结传感器/微动。</small></div>
+        <div class="nav"><button>上一页</button><button>下一页</button></div>
+      </section>
+
+      <!-- 4 split -->
+      <section class="slide" data-title="连接方式" data-sub="无线不是原罪，稳定才是">
+        <div class="topline"><span class="tag">连接选择</span><span class="page">04 / 08</span></div>
+        <h2>有线 vs 无线：怎么选不踩坑</h2>
+        <p class="sub">决定因素是：<b>稳定性</b>、<b>延迟容忍度</b>、<b>移动需求</b>、<b>充电习惯</b>。</p>
+        <div class="grid cols2">
+          <div class="card">
+            <h3>有线（USB）适合你如果…</h3>
+            <p>• 不想充电、不想折腾<br/>• 桌面固定，追求“永远稳”<br/>• 预算更敏感</p>
+            <p style="margin-top:10px" class="muted">注意：线材软硬、走线方式，会显著影响拖拽感。</p>
+          </div>
+          <div class="card">
+            <h3>无线（2.4G / 蓝牙）适合你如果…</h3>
+            <p>• 桌面整洁、经常带走<br/>• 追求更低阻力移动<br/>• 想要多设备切换</p>
+            <p style="margin-top:10px" class="muted">优先 2.4G；蓝牙更适合办公便携与应急。</p>
+          </div>
+        </div>
+        <div class="grid cols3" style="margin-top:14px">
+          <div class="card"><h3>2.4G</h3><p>主力选择：低延迟、稳定，适合游戏。</p></div>
+          <div class="card"><h3>蓝牙</h3><p>兼容广：适合多设备与轻办公，但延迟和抗干扰略弱。</p></div>
+          <div class="card"><h3>双模/三模</h3><p>最通用：2.4G + 蓝牙（+ 有线），适合“家+公司”。</p></div>
+        </div>
+        <div class="nav"><button>上一页</button><button>下一页</button></div>
+      </section>
+
+      <!-- 5 dashboard -->
+      <section class="slide" data-title="参数怎么读" data-sub="只看这 6 个就够了">
+        <div class="topline"><span class="tag">参数筛选</span><span class="page">05 / 08</span></div>
+        <h2>参数怎么读：只看这 6 个就够了</h2>
+        <p class="sub">很多参数是营销噪音。把注意力放在“会影响日常体验”的项目上。</p>
+        <div class="grid cols3">
+          <div class="card"><h3>传感器稳定性</h3><p>优先看：口碑/测评的跟手稳定、无明显丢帧/加速度问题。</p></div>
+          <div class="card"><h3>回报率（Polling）</h3><p>办公 125–500Hz 足够；游戏 1000Hz 常见。更高需看平台与功耗权衡。</p></div>
+          <div class="card"><h3>重量&重心</h3><p>比“DPI 上限”更重要。轻量适合快速移动；重一点更稳更省力。</p></div>
+          <div class="card"><h3>微动&手感</h3><p>关注：触发力度、回弹、空键程。并非“更脆=更好”。</p></div>
+          <div class="card"><h3>滚轮体验</h3><p>办公看：段落感、静音、侧滚/解锁；游戏看：定位与耐用。</p></div>
+          <div class="card"><h3>握持材质</h3><p>防滑、出汗、涂层耐久决定长期体验；需要可拆侧裙/防滑贴可加分。</p></div>
+        </div>
+        <div class="nav"><button>上一页</button><button>下一页</button></div>
+      </section>
+
+      <!-- 6 table -->
+      <section class="slide" data-title="按预算选" data-sub="三档策略 + 快速推荐逻辑">
+        <div class="topline"><span class="tag">决策矩阵</span><span class="page">06 / 08</span></div>
+        <h2>按预算选：三档策略（不背型号）</h2>
+        <p class="sub">同档位优先级：<b>形状适配</b> → <b>连接稳定</b> → <b>滚轮/按键</b> → <b>传感器/回报率</b>。</p>
+        <div class="card" style="margin-top:18px">
+          <table>
+            <thead>
+              <tr>
+                <th>预算</th>
+                <th>你能得到什么</th>
+                <th>建议场景</th>
+                <th>买前检查</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><b>¥100–200</b></td>
+                <td>基本好用；做工/涂层/滚轮可能一般</td>
+                <td>轻办公、备用、学生</td>
+                <td class="muted">尺寸合不合手；无线是否稳定；售后</td>
+              </tr>
+              <tr>
+                <td><b>¥200–400</b></td>
+                <td>体验跃迁；更好的无线、重量控制、手感</td>
+                <td>主力办公 + 轻度游戏</td>
+                <td class="muted">重心是否舒服；滚轮与微动手感；续航</td>
+              </tr>
+              <tr>
+                <td><b>¥400+</b></td>
+                <td>为“极致手感/轻量/生态”付费</td>
+                <td>重度游戏、追求极致效率</td>
+                <td class="muted">是否真的需要；尺寸/握法是否匹配</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="nav"><button>上一页</button><button>下一页</button></div>
+      </section>
+
+      <!-- 7 quote/full-bleed hybrid -->
+      <section class="slide" data-title="常见坑" data-sub="避坑清单（强实用）">
+        <div class="topline"><span class="tag">避坑</span><span class="page">07 / 08</span></div>
+        <h2>避坑清单：下单前 60 秒检查</h2>
+        <p class="sub">把这页当成“结账前 checklist”。</p>
+        <div class="grid cols2">
+          <div class="card">
+            <h3>体验坑（买回去难受）</h3>
+            <p>• 尺寸不合手：手指紧/手腕酸<br/>• 形状不贴合：抓握侧裙顶手<br/>• 重量不适：太重/太轻导致控制不稳<br/>• 滚轮段落感差：办公滚动痛苦</p>
+          </div>
+          <div class="card">
+            <h3>工程坑（用着用着烦）</h3>
+            <p>• 无线干扰：2.4G 掉帧/断连<br/>• 充电焦虑：续航短且无法边充边用<br/>• 驱动复杂：多设备切换麻烦<br/>• 涂层耐久：出汗打滑/掉漆</p>
+          </div>
+        </div>
+        <div class="quote">如果你只能记住一条：<b>“不合手 = 永远不合手”</b><small>能试握就试握；不能试握就先锁定尺寸区间和握法，再看测评与退换政策。</small></div>
+        <div class="nav"><button>上一页</button><button>下一页</button></div>
+      </section>
+
+      <!-- 8 closing -->
+      <section class="slide" data-title="结论" data-sub="给你一条最短路径">
+        <div class="topline"><span class="tag">Closing</span><span class="page">08 / 08</span></div>
+        <h2>最短购买路径（建议照着做）</h2>
+        <p class="sub">把选择从“海量型号”缩到 2–3 个候选，然后用一轮体验排除法搞定。</p>
+        <div class="grid cols3">
+          <div class="card">
+            <h3>Step 1｜锁场景</h3>
+            <p>办公 / 游戏 / 便携 / 多设备。先选连接方式（2.4G 优先）。</p>
+          </div>
+          <div class="card">
+            <h3>Step 2｜锁手感</h3>
+            <p>握法 + 手型 → 选尺寸和背拱；再选重量区间。</p>
+          </div>
+          <div class="card">
+            <h3>Step 3｜锁细节</h3>
+            <p>滚轮/微动/侧键/驱动；确认退换政策，直接下单。</p>
+          </div>
+        </div>
+        <div class="card" style="margin-top:16px">
+          <h3 style="margin:0 0 8px 0">你给我 4 个信息，我可以直接给“3款候选 + 选哪个”</h3>
+          <p class="muted" style="margin:0">①预算区间｜②手长/手宽（或“手偏大/偏小”）｜③握法（趴/抓/指）｜④主要用途（办公/游戏/剪辑/多设备）。</p>
+        </div>
+        <div class="nav"><button>上一页</button><button>回到封面</button></div>
+      </section>
+
+    </main>
+  </div>
+
+  <script>
+    const slides = Array.from(document.querySelectorAll('.slide'));
+    const toc = document.getElementById('toc');
+    let idx = 0;
+
+    function renderToc(){
+      toc.innerHTML = '';
+      slides.forEach((s, i)=>{
+        const b = document.createElement('button');
+        b.className = i===idx ? 'active' : '';
+        b.innerHTML = `<span class="idx">${String(i+1).padStart(2,'0')}</span><span><div class="t">${s.dataset.title}</div><div class="s">${s.dataset.sub||''}</div></span>`;
+        b.addEventListener('click', ()=>go(i));
+        toc.appendChild(b);
+      });
+    }
+
+    function go(i){
+      idx = Math.max(0, Math.min(slides.length-1, i));
+      slides.forEach((s, j)=>s.classList.toggle('active', j===idx));
+      renderToc();
+    }
+
+    function next(){ go(idx+1); }
+    function prev(){ go(idx-1); }
+
+    // wire nav buttons inside slides (fallback)
+    document.addEventListener('click', (e)=>{
+      const t = e.target;
+      if(!(t instanceof HTMLElement)) return;
+      if(t.id==='next1') next();
+      if(t.id==='prev1') prev();
+      if(t.textContent==='下一页') next();
+      if(t.textContent==='上一页') prev();
+      if(t.textContent==='回到封面') go(0);
+    });
+
+    // keyboard
+    document.addEventListener('keydown', (e)=>{
+      if(['ArrowRight','d','D'].includes(e.key)) next();
+      if(['ArrowLeft','a','A'].includes(e.key)) prev();
+      if(e.key==='Escape'){
+        const rail = document.querySelector('.rail');
+        if(!rail) return;
+        rail.style.display = (rail.style.display==='none') ? '' : 'none';
+      }
+    });
+
+    renderToc();
+  </script>
+</body>
+</html>
