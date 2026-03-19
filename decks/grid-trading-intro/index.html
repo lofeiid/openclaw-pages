@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>网格交易的简介</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Azeret+Mono:wght@400;500;600&family=DM+Sans:wght@400;500;700;800&family=IBM+Plex+Mono:wght@400;500&family=JetBrains+Mono:wght@400;500&family=Manrope:wght@400;500;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Sora:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0d1321;
+      --surface: #151d30;
+      --surface-alt: #1e293b;
+      --ink: #f8fafc;
+      --muted: #94a3b8;
+      --accent: #f97316;
+      --accent-soft: #2a1d16;
+      --accent-secondary: #38bdf8;
+      --shadow: 0 28px 72px rgba(13, 19, 33, 0.42);
+      --grid-line: rgba(56, 189, 248, 0.08);
+      --font-display: "Sora", sans-serif;
+      --font-body: "Sora", sans-serif;
+      --font-mono: "IBM Plex Mono", monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+      background:
+        radial-gradient(circle at top left, color-mix(in srgb, var(--accent) 16%, transparent), transparent 32rem),
+        radial-gradient(circle at bottom right, color-mix(in srgb, var(--accent-secondary) 18%, transparent), transparent 30rem),
+        var(--bg);
+      color: var(--ink);
+      font-family: var(--font-body);
+      overflow: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+        linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+      background-size: 4rem 4rem;
+      opacity: 0.5;
+      pointer-events: none;
+    }
+
+    .deck-shell {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      padding: clamp(1.4rem, 3vw, 2.7rem);
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      gap: 1rem;
+      opacity: 0;
+      transform: translateX(2.5rem) scale(0.985);
+      pointer-events: none;
+      transition: opacity 320ms ease, transform 420ms ease;
+    }
+
+    .slide.active {
+      opacity: 1;
+      transform: translateX(0) scale(1);
+      pointer-events: auto;
+    }
+
+    .chrome,
+    .footer,
+    .nav,
+    .dots {
+      display: flex;
+      align-items: center;
+    }
+
+    .chrome,
+    .footer {
+      justify-content: space-between;
+      gap: 1rem;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+    }
+
+    .nav,
+    .dots {
+      gap: 0.65rem;
+    }
+
+    .nav button,
+    .dot {
+      border: 0;
+      cursor: pointer;
+      transition: transform 180ms ease, opacity 180ms ease, background 180ms ease;
+    }
+
+    .nav button {
+      padding: 0.55rem 0.9rem;
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--surface) 82%, transparent);
+      color: var(--ink);
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+    }
+
+    .nav button:hover,
+    .nav button:focus-visible {
+      transform: translateY(-1px);
+      background: color-mix(in srgb, var(--accent-soft) 58%, var(--surface));
+      outline: none;
+    }
+
+    .dot {
+      width: 0.55rem;
+      height: 0.55rem;
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--muted) 72%, transparent);
+      opacity: 0.45;
+    }
+
+    .dot.active {
+      opacity: 1;
+      transform: scale(1.35);
+      background: var(--accent);
+    }
+
+    .slide-body {
+      min-height: 0;
+      display: grid;
+      gap: 1.15rem;
+      align-content: center;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--muted);
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 1.8rem;
+      height: 1px;
+      background: var(--accent);
+    }
+
+    h1,
+    h2,
+    strong {
+      font-family: var(--font-display);
+      margin: 0;
+    }
+
+    h1 {
+      font-size: clamp(3.1rem, 8.5vw, 6.6rem);
+      line-height: 0.95;
+      letter-spacing: -0.05em;
+      max-width: 12ch;
+    }
+
+    h2 {
+      font-size: clamp(2.15rem, 6vw, 4.3rem);
+      line-height: 0.98;
+      letter-spacing: -0.04em;
+      max-width: 13ch;
+    }
+
+    .subhead,
+    .intro,
+    .statement,
+    .quote-attribution,
+    .split-panel p,
+    .card p,
+    .stat-card p,
+    .timeline-step p {
+      color: var(--muted);
+      line-height: 1.65;
+      margin: 0;
+      font-size: clamp(0.98rem, 2vw, 1.22rem);
+    }
+
+    .hero-panel,
+    .card,
+    .split-panel,
+    .stat-card,
+    .table-shell,
+    .timeline-step {
+      border-radius: 1.45rem;
+      background: color-mix(in srgb, var(--surface) 88%, transparent);
+      border: 1px solid color-mix(in srgb, var(--accent) 18%, transparent);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(14px);
+    }
+
+    .hero-panel {
+      padding: clamp(1.5rem, 3vw, 2.2rem);
+      max-width: 64rem;
+      display: grid;
+      gap: 1.1rem;
+    }
+
+    .title-slide {
+      justify-items: start;
+    }
+
+    .hero-emoji {
+      font-size: clamp(4rem, 8vw, 6.2rem);
+      line-height: 1;
+      animation: bounce-in 1800ms ease-in-out infinite;
+    }
+
+    .metrics-grid,
+    .cards-grid,
+    .stat-grid {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .metrics-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .metric-chip {
+      padding: 0.9rem 1rem;
+      border-radius: 1rem;
+      background: color-mix(in srgb, var(--accent-soft) 56%, var(--surface));
+      display: grid;
+      gap: 0.3rem;
+    }
+
+    .metric-label,
+    .stat-label,
+    .timeline-label,
+    .bleed-badge {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .metric-chip strong,
+    .stat-value {
+      font-size: clamp(1.15rem, 2.5vw, 2rem);
+      line-height: 1.05;
+      color: var(--ink);
+    }
+
+    .divider-slide,
+    .quote-slide,
+    .full-bleed-slide {
+      justify-items: center;
+      text-align: center;
+    }
+
+    .divider-mark {
+      font-family: var(--font-display);
+      font-size: clamp(5rem, 18vw, 12rem);
+      line-height: 0.82;
+      color: color-mix(in srgb, var(--accent) 14%, transparent);
+    }
+
+    .cards-grid {
+      grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+    }
+
+    .card {
+      padding: 1.2rem 1.1rem;
+      min-height: 12rem;
+      display: grid;
+      gap: 0.5rem;
+      align-content: start;
+    }
+
+    .card-emoji {
+      font-size: 2rem;
+      line-height: 1;
+    }
+
+    .card strong,
+    .split-panel strong,
+    .timeline-step strong {
+      font-size: 1.05rem;
+      line-height: 1.3;
+      color: var(--ink);
+    }
+
+    .card span {
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+
+    .split-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+    }
+
+    .split-panel {
+      padding: 1.2rem 1.15rem;
+      display: grid;
+      gap: 0.75rem;
+    }
+
+    .split-panel.alt {
+      background: color-mix(in srgb, var(--surface-alt) 88%, transparent);
+      border-color: color-mix(in srgb, var(--accent-secondary) 18%, transparent);
+    }
+
+    .bullet-list,
+    .action-list {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 0.65rem;
+    }
+
+    .bullet-item,
+    .action-item {
+      position: relative;
+      padding-left: 1.05rem;
+      line-height: 1.55;
+      color: var(--muted);
+    }
+
+    .bullet-item::before,
+    .action-item::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0.78em;
+      width: 0.42rem;
+      height: 0.42rem;
+      border-radius: 999px;
+      background: var(--accent);
+      transform: translateY(-50%);
+    }
+
+    .stat-grid {
+      grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+    }
+
+    .stat-card {
+      padding: 1.25rem 1.1rem;
+      display: grid;
+      gap: 0.45rem;
+      min-height: 12rem;
+      align-content: start;
+    }
+
+    .table-shell {
+      overflow: hidden;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.95rem;
+    }
+
+    th,
+    td {
+      padding: 0.9rem 1rem;
+      border-bottom: 1px solid color-mix(in srgb, var(--accent) 12%, transparent);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    td {
+      color: var(--ink);
+      line-height: 1.55;
+    }
+
+    .quote-mark {
+      font-size: clamp(4rem, 10vw, 7rem);
+      line-height: 0.8;
+      color: color-mix(in srgb, var(--accent) 24%, transparent);
+    }
+
+    blockquote {
+      margin: 0;
+      max-width: 20ch;
+      font-family: var(--font-display);
+      font-size: clamp(1.8rem, 4.2vw, 3.2rem);
+      line-height: 1.16;
+      letter-spacing: -0.03em;
+    }
+
+    .timeline-grid {
+      display: grid;
+      gap: 0.9rem;
+    }
+
+    .timeline-step {
+      padding: 1rem 1.05rem;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 1rem;
+      align-items: start;
+    }
+
+    .timeline-label {
+      width: 3.4rem;
+      min-width: 3.4rem;
+      min-height: 3.4rem;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: color-mix(in srgb, var(--accent-soft) 70%, var(--surface));
+      color: var(--accent);
+    }
+
+    .full-bleed-slide {
+      border-radius: 2rem;
+      padding: clamp(2rem, 5vw, 3.5rem);
+      background:
+        linear-gradient(140deg, color-mix(in srgb, var(--accent) 24%, transparent), transparent 45%),
+        linear-gradient(120deg, color-mix(in srgb, var(--accent-secondary) 18%, transparent), transparent 52%),
+        color-mix(in srgb, var(--surface-alt) 84%, var(--bg));
+      border: 1px solid color-mix(in srgb, var(--accent) 18%, transparent);
+      box-shadow: var(--shadow);
+    }
+
+    .bleed-badge {
+      display: inline-flex;
+      width: fit-content;
+      padding: 0.45rem 0.75rem;
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--accent-soft) 60%, transparent);
+      color: var(--ink);
+    }
+
+    .closing-slide .hero-panel {
+      max-width: 60rem;
+    }
+
+    @keyframes bounce-in {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    @media (max-width: 880px) {
+      .split-grid,
+      .metrics-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .footer {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="deck-shell" id="deck">
+    <article class="slide active">
+      <div class="chrome">
+        <span>title</span>
+        <span data-page></span>
+      </div>
+    
+          <section class="slide-body title-slide">
+            <div class="eyebrow">Presentation Factory</div>
+            <div class="hero-emoji">📊</div>
+            <h1>网格交易的简介</h1>
+            <div class="hero-panel">
+              <p class="subhead">不只列举差异，而是把 网格交易的简介 的判断标准、适用场景和取舍讲清楚。</p>
+              <div class="metrics-grid">
+        <article class="metric-chip">
+          <span class="metric-label">Audience</span>
+          <strong>Technical</strong>
+          <p>这套 deck 主要为谁讲</p>
+        </article>
+        
+        <article class="metric-chip">
+          <span class="metric-label">Mode</span>
+          <strong>Comparison</strong>
+          <p>叙事结构的主模式</p>
+        </article>
+        
+        <article class="metric-chip">
+          <span class="metric-label">Density</span>
+          <strong>Dense</strong>
+          <p>信息密度和版式节奏</p>
+        </article>
+        </div>
+            </div>
+          </section>
+        
+      <div class="footer">
+        <div class="nav">
+          <button type="button" data-action="prev">Prev</button>
+          <button type="button" data-action="next">Next</button>
+        </div>
+        <div class="dots"><button type="button" class="dot" data-action="jump" data-index="0" aria-label="Jump to slide 1"></button><button type="button" class="dot" data-action="jump" data-index="1" aria-label="Jump to slide 2"></button><button type="button" class="dot" data-action="jump" data-index="2" aria-label="Jump to slide 3"></button><button type="button" class="dot" data-action="jump" data-index="3" aria-label="Jump to slide 4"></button><button type="button" class="dot" data-action="jump" data-index="4" aria-label="Jump to slide 5"></button><button type="button" class="dot" data-action="jump" data-index="5" aria-label="Jump to slide 6"></button><button type="button" class="dot" data-action="jump" data-index="6" aria-label="Jump to slide 7"></button><button type="button" class="dot" data-action="jump" data-index="7" aria-label="Jump to slide 8"></button></div>
+      </div>
+    </article><article class="slide">
+      <div class="chrome">
+        <span>divider</span>
+        <span data-page></span>
+      </div>
+    
+          <section class="slide-body divider-slide">
+            <div class="divider-mark">02</div>
+            <h2>别只罗列差异</h2>
+            <p class="subhead">观众真正想知道的是：面对 网格交易的简介，该如何判断和选择。</p>
+          </section>
+        
+      <div class="footer">
+        <div class="nav">
+          <button type="button" data-action="prev">Prev</button>
+          <button type="button" data-action="next">Next</button>
+        </div>
+        <div class="dots"><button type="button" class="dot" data-action="jump" data-index="0" aria-label="Jump to slide 1"></button><button type="button" class="dot" data-action="jump" data-index="1" aria-label="Jump to slide 2"></button><button type="button" class="dot" data-action="jump" data-index="2" aria-label="Jump to slide 3"></button><button type="button" class="dot" data-action="jump" data-index="3" aria-label="Jump to slide 4"></button><button type="button" class="dot" data-action="jump" data-index="4" aria-label="Jump to slide 5"></button><button type="button" class="dot" data-action="jump" data-index="5" aria-label="Jump to slide 6"></button><button type="button" class="dot" data-action="jump" data-index="6" aria-label="Jump to slide 7"></button><button type="button" class="dot" data-action="jump" data-index="7" aria-label="Jump to slide 8"></button></div>
+      </div>
+    </article><article class="slide">
+      <div class="chrome">
+        <span>cards</span>
+        <span data-page></span>
+      </div>
+    
+          <section class="slide-body">
+            
+            <h2>比较 网格交易的简介 时最值得先讲的维度</h2>
+            <p class="intro">先给比较维度，听众才知道后面每个差异为什么重要。</p>
+            <div class="cards-grid">
+        <article class="card">
+          <div class="card-emoji">🎯</div>
+          <strong>目标</strong>
+          <span>解决什么问题</span>
+          <p>同样的对象，目标不同，选择就不同</p>
+        </article>
+        
+        <article class="card">
+          <div class="card-emoji">📦</div>
+          <strong>结构</strong>
+          <span>能力边界</span>
+          <p>哪些能力是内置的，哪些需要额外补</p>
+        </article>
+        
+        <article class="card">
+          <div class="card-emoji">⚖️</div>
+          <strong>取舍</strong>
+          <span>快 vs 稳 / 灵活 vs 规范</span>
+          <p>比较不是选最好，而是选最适合</p>
+        </article>
+        
+        <article class="card">
+          <div class="card-emoji">🧪</div>
+          <strong>落地</strong>
+          <span>真实使用感</span>
+          <p>最后要回到执行和维护成本</p>
+        </article>
+        </div>
+          </section>
+        
+      <div class="footer">
+        <div class="nav">
+          <button type="button" data-action="prev">Prev</button>
+          <button type="button" data-action="next">Next</button>
+        </div>
+        <div class="dots"><button type="button" class="dot" data-action="jump" data-index="0" aria-label="Jump to slide 1"></button><button type="button" class="dot" data-action="jump" data-index="1" aria-label="Jump to slide 2"></button><button type="button" class="dot" data-action="jump" data-index="2" aria-label="Jump to slide 3"></button><button type="button" class="dot" data-action="jump" data-index="3" aria-label="Jump to slide 4"></button><button type="button" class="dot" data-action="jump" data-index="4" aria-label="Jump to slide 5"></button><button type="button" class="dot" data-action="jump" data-index="5" aria-label="Jump to slide 6"></button><button type="button" class="dot" data-action="jump" data-index="6" aria-label="Jump to slide 7"></button><button type="button" class="dot" data-action="jump" data-index="7" aria-label="Jump to slide 8"></button></div>
+      </div>
+    </article><article class="slide">
+      <div class="chrome">
+        <span>split</span>
+        <span data-page></span>
+      </div>
+    
+          <section class="slide-body">
+            
+            <h2>网格交易的简介 的两种典型读法</h2>
+            <div class="split-grid">
+              <article class="split-panel">
+                <strong>面向普通读者</strong>
+                <p>重点是快速建立差异印象，让人记住每种选择更像什么、适合什么。</p>
+                <ul class="bullet-list"><li class="bullet-item">用大标题和短句建立记忆点</li><li class="bullet-item">差异要可感知，不要全是术语</li><li class="bullet-item">一页只比较一个维度</li></ul>
+              </article>
+              <article class="split-panel alt">
+                <strong>面向专业读者</strong>
+                <p>重点是决策依据和边界条件，让对方能直接判断适配性和风险。</p>
+                <ul class="bullet-list"><li class="bullet-item">表格和矩阵更重要</li><li class="bullet-item">要明确适用场景和限制</li><li class="bullet-item">结尾要有推荐条件而不是空泛总结</li></ul>
+              </article>
+            </div>
+          </section>
+        
+      <div class="footer">
+        <div class="nav">
+          <button type="button" data-action="prev">Prev</button>
+          <button type="button" data-action="next">Next</button>
+        </div>
+        <div class="dots"><button type="button" class="dot" data-action="jump" data-index="0" aria-label="Jump to slide 1"></button><button type="button" class="dot" data-action="jump" data-index="1" aria-label="Jump to slide 2"></button><button type="button" class="dot" data-action="jump" data-index="2" aria-label="Jump to slide 3"></button><button type="button" class="dot" data-action="jump" data-index="3" aria-label="Jump to slide 4"></button><button type="button" class="dot" data-action="jump" data-index="4" aria-label="Jump to slide 5"></button><button type="button" class="dot" data-action="jump" data-index="5" aria-label="Jump to slide 6"></button><button type="button" class="dot" data-action="jump" data-index="6" aria-label="Jump to slide 7"></button><button type="button" class="dot" data-action="jump" data-index="7" aria-label="Jump to slide 8"></button></div>
+      </div>
+    </article><article class="slide">
+      <div class="chrome">
+        <span>dashboard</span>
+        <span data-page></span>
+      </div>
+    
+          <section class="slide-body">
+            
+            <h2>决定 网格交易的简介 结论的 4 个评价信号</h2>
+            <p class="intro">这四项可以作为 deck 的主判断骨架。</p>
+            <div class="stat-grid">
+        <article class="stat-card">
+          <span class="stat-label">Fit</span>
+          <strong class="stat-value">看场景</strong>
+          <p>是否适合当前任务和组织形态</p>
+        </article>
+        
+        <article class="stat-card">
+          <span class="stat-label">Cost</span>
+          <strong class="stat-value">看代价</strong>
+          <p>时间、协作、维护和切换成本</p>
+        </article>
+        
+        <article class="stat-card">
+          <span class="stat-label">Speed</span>
+          <strong class="stat-value">看效率</strong>
+          <p>带来多快的反馈和产出节奏</p>
+        </article>
+        
+        <article class="stat-card">
+          <span class="stat-label">Risk</span>
+          <strong class="stat-value">看边界</strong>
+          <p>出问题时最容易卡在哪里</p>
+        </article>
+        </div>
+          </section>
+        
+      <div class="footer">
+        <div class="nav">
+          <button type="button" data-action="prev">Prev</button>
+          <button type="button" data-action="next">Next</button>
+        </div>
+        <div class="dots"><button type="button" class="dot" data-action="jump" data-index="0" aria-label="Jump to slide 1"></button><button type="button" class="dot" data-action="jump" data-index="1" aria-label="Jump to slide 2"></button><button type="button" class="dot" data-action="jump" data-index="2" aria-label="Jump to slide 3"></button><button type="button" class="dot" data-action="jump" data-index="3" aria-label="Jump to slide 4"></button><button type="button" class="dot" data-action="jump" data-index="4" aria-label="Jump to slide 5"></button><button type="button" class="dot" data-action="jump" data-index="5" aria-label="Jump to slide 6"></button><button type="button" class="dot" data-action="jump" data-index="6" aria-label="Jump to slide 7"></button><button type="button" class="dot" data-action="jump" data-index="7" aria-label="Jump to slide 8"></button></div>
+      </div>
+    </article><article class="slide">
+      <div class="chrome">
+        <span>table</span>
+        <span data-page></span>
+      </div>
+    
+          <section class="slide-body">
+            
+            <h2>网格交易的简介 的推荐比较矩阵</h2>
+            <div class="table-shell"><table><thead><tr><th>比较维度</th><th>方案 A</th><th>方案 B</th></tr></thead><tbody><tr><td>适用人群</td><td>对流程要求更高</td><td>对灵活性要求更高</td></tr><tr><td>内容表达</td><td>更适合规范型输出</td><td>更适合探索型输出</td></tr><tr><td>上线节奏</td><td>稳定但准备更多</td><td>更快但需更多校准</td></tr><tr><td>最佳用法</td><td>统一交付标准</td><td>高频试错优化</td></tr></tbody></table></div>
+          </section>
+        
+      <div class="footer">
+        <div class="nav">
+          <button type="button" data-action="prev">Prev</button>
+          <button type="button" data-action="next">Next</button>
+        </div>
+        <div class="dots"><button type="button" class="dot" data-action="jump" data-index="0" aria-label="Jump to slide 1"></button><button type="button" class="dot" data-action="jump" data-index="1" aria-label="Jump to slide 2"></button><button type="button" class="dot" data-action="jump" data-index="2" aria-label="Jump to slide 3"></button><button type="button" class="dot" data-action="jump" data-index="3" aria-label="Jump to slide 4"></button><button type="button" class="dot" data-action="jump" data-index="4" aria-label="Jump to slide 5"></button><button type="button" class="dot" data-action="jump" data-index="5" aria-label="Jump to slide 6"></button><button type="button" class="dot" data-action="jump" data-index="6" aria-label="Jump to slide 7"></button><button type="button" class="dot" data-action="jump" data-index="7" aria-label="Jump to slide 8"></button></div>
+      </div>
+    </article><article class="slide">
+      <div class="chrome">
+        <span>quote</span>
+        <span data-page></span>
+      </div>
+    
+          <section class="slide-body quote-slide">
+            
+            <span class="quote-mark">“</span>
+            <h2>比较类 deck 的关键</h2>
+            <blockquote>比较 网格交易的简介 时，最有价值的不是告诉别人谁更强，而是说明在什么条件下该选谁。</blockquote>
+            <p class="quote-attribution">Decision framing</p>
+          </section>
+        
+      <div class="footer">
+        <div class="nav">
+          <button type="button" data-action="prev">Prev</button>
+          <button type="button" data-action="next">Next</button>
+        </div>
+        <div class="dots"><button type="button" class="dot" data-action="jump" data-index="0" aria-label="Jump to slide 1"></button><button type="button" class="dot" data-action="jump" data-index="1" aria-label="Jump to slide 2"></button><button type="button" class="dot" data-action="jump" data-index="2" aria-label="Jump to slide 3"></button><button type="button" class="dot" data-action="jump" data-index="3" aria-label="Jump to slide 4"></button><button type="button" class="dot" data-action="jump" data-index="4" aria-label="Jump to slide 5"></button><button type="button" class="dot" data-action="jump" data-index="5" aria-label="Jump to slide 6"></button><button type="button" class="dot" data-action="jump" data-index="6" aria-label="Jump to slide 7"></button><button type="button" class="dot" data-action="jump" data-index="7" aria-label="Jump to slide 8"></button></div>
+      </div>
+    </article><article class="slide">
+      <div class="chrome">
+        <span>closing</span>
+        <span data-page></span>
+      </div>
+    
+          <section class="slide-body closing-slide">
+            
+            <h2>让 网格交易的简介 的对比结论真正可用</h2>
+            <div class="hero-panel">
+              <p class="statement">把差异翻译成选择条件，听众才会带着结论离开，而不是只记住一堆信息点。</p>
+              <ul class="action-list"><li class="action-item">先给比较维度，再给具体差异</li><li class="action-item">把优劣换成适用条件</li><li class="action-item">最后给出推荐场景和不推荐场景</li></ul>
+            </div>
+          </section>
+        
+      <div class="footer">
+        <div class="nav">
+          <button type="button" data-action="prev">Prev</button>
+          <button type="button" data-action="next">Next</button>
+        </div>
+        <div class="dots"><button type="button" class="dot" data-action="jump" data-index="0" aria-label="Jump to slide 1"></button><button type="button" class="dot" data-action="jump" data-index="1" aria-label="Jump to slide 2"></button><button type="button" class="dot" data-action="jump" data-index="2" aria-label="Jump to slide 3"></button><button type="button" class="dot" data-action="jump" data-index="3" aria-label="Jump to slide 4"></button><button type="button" class="dot" data-action="jump" data-index="4" aria-label="Jump to slide 5"></button><button type="button" class="dot" data-action="jump" data-index="5" aria-label="Jump to slide 6"></button><button type="button" class="dot" data-action="jump" data-index="6" aria-label="Jump to slide 7"></button><button type="button" class="dot" data-action="jump" data-index="7" aria-label="Jump to slide 8"></button></div>
+      </div>
+    </article>
+  </main>
+  <script>
+    const slides = Array.from(document.querySelectorAll(".slide"));
+    const dots = Array.from(document.querySelectorAll(".dot"));
+    const pages = Array.from(document.querySelectorAll("[data-page]"));
+    let current = 0;
+
+    function render() {
+      slides.forEach((slide, index) => slide.classList.toggle("active", index === current));
+      dots.forEach((dot, index) => dot.classList.toggle("active", index === current));
+      pages.forEach((page) => {
+        page.textContent = String(current + 1).padStart(2, "0") + " / " + String(slides.length).padStart(2, "0");
+      });
+    }
+
+    function goTo(index) {
+      current = Math.max(0, Math.min(index, slides.length - 1));
+      render();
+    }
+
+    document.addEventListener("click", (event) => {
+      const target = event.target.closest("[data-action]");
+      if (!target) return;
+      const action = target.getAttribute("data-action");
+      if (action === "prev") goTo(current - 1);
+      if (action === "next") goTo(current + 1);
+      if (action === "jump") goTo(Number(target.getAttribute("data-index") || "0"));
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (["ArrowRight", "ArrowDown", "PageDown", " "].includes(event.key)) {
+        event.preventDefault();
+        goTo(current + 1);
+      }
+      if (["ArrowLeft", "ArrowUp", "PageUp"].includes(event.key)) {
+        event.preventDefault();
+        goTo(current - 1);
+      }
+      if (event.key === "Home") goTo(0);
+      if (event.key === "End") goTo(slides.length - 1);
+    });
+
+    render();
+  </script>
+</body>
+</html>
