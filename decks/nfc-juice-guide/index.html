@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NFC 果汁选购指南</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fefdf6;--ink:#1a2e05;--dim:#6b7c5a;--acc:#f5960a;--grn:#3dab4f;--grnD:#2a7a35;--orgL:#fff0d0;--grnL:#e6f7e6}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-snap-type:y mandatory;scroll-behavior:smooth}
+body{font-family:'DM Sans',-apple-system,'PingFang SC',sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+.s{min-height:100dvh;scroll-snap-align:start;display:flex;flex-direction:column;justify-content:center;padding:3rem 4rem;overflow:hidden}
+@media(max-width:768px){.s{padding:2rem 1.5rem}}
+.nd{position:fixed;right:1.5rem;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:8px;z-index:100}
+.nd button{width:10px;height:10px;border-radius:50%;background:var(--acc);opacity:.3;cursor:pointer;transition:all .3s;border:none}
+.nd button.on{opacity:1;transform:scale(1.3)}
+.sc{position:fixed;bottom:1.5rem;right:1.5rem;font-family:'Space Mono',monospace;font-size:.8rem;color:var(--dim);z-index:100;background:rgba(255,248,232,.9);padding:4px 10px;border-radius:20px}
+.s-title{background:linear-gradient(160deg,#fefdf6,#fff3d4 40%,#ffe0a0);text-align:center;align-items:center}
+.s-title .hero{font-size:6rem;margin-bottom:1rem;animation:b 2.5s ease-in-out infinite}
+@keyframes b{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-15px) rotate(3deg)}}
+.s-title h1{font-size:3.5rem;font-weight:800;letter-spacing:-.02em;margin-bottom:.5rem}
+.s-title .sub{font-size:1.15rem;color:var(--dim);font-weight:500}
+.badges{display:flex;gap:12px;margin-top:1.5rem;flex-wrap:wrap;justify-content:center}
+.bdg{padding:6px 16px;border-radius:24px;font-size:.8rem;font-weight:600}
+.bo{background:var(--orgL);color:#b06800}.bg{background:var(--grnL);color:var(--grnD)}
+.s-div{background:var(--acc);color:#fff;text-align:center;align-items:center}
+.s-div.g{background:var(--grn)}
+.s-div h2{font-size:2.5rem;font-weight:800}
+.s-div p{font-size:1.1rem;opacity:.85;margin-top:.5rem}
+.s-c h2{font-size:1.75rem;font-weight:800;margin-bottom:1.5rem;position:relative;display:inline-block}
+.s-c h2::after{content:'';position:absolute;bottom:-4px;left:0;width:60px;height:4px;background:var(--acc);border-radius:2px}
+.intro{color:var(--dim);font-size:.9rem;margin-bottom:1.25rem;max-width:800px}
+.cg{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.25rem;margin-top:.5rem}
+.cd{background:#fff;border:2px solid #ede5c8;border-radius:16px;padding:1.5rem;transition:all .3s}
+.cd:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(245,150,10,.12);border-color:var(--acc)}
+.cd .em{font-size:2.25rem;margin-bottom:.5rem}
+.cd h3{font-size:1.1rem;font-weight:700;margin-bottom:.25rem}
+.cd .sm{font-family:'Space Mono',monospace;font-size:.7rem;color:var(--dim);margin-bottom:.5rem}
+.cd p{font-size:.85rem;color:var(--dim);line-height:1.5}
+.tg{display:flex;gap:6px;flex-wrap:wrap;margin-top:.75rem}
+.t{display:inline-block;padding:2px 10px;border-radius:20px;font-size:.7rem;font-weight:600}
+.to{background:#fff3d4;color:#b06800}.tgr{background:#e6f7e6;color:#1e6a1e}.tre{background:#fde8e8;color:#c0392b}
+.tbl{background:#e8f0fd;color:#2c5ea0}.tpu{background:#f0e6f6;color:#7b2d8e}.tbr{background:#f0e6d2;color:#6b4c1e}
+.fg{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin-top:1rem}
+.fc{background:#fff;border:2px solid #ede5c8;border-radius:16px;padding:1.5rem;text-align:center}
+.fn{font-size:2.2rem;font-weight:800;font-family:'Space Mono',monospace;color:var(--acc)}
+.fl{font-size:.8rem;color:var(--dim);margin-top:.25rem}
+.ct{width:100%;border-collapse:separate;border-spacing:0;margin-top:1rem;font-size:.85rem;background:#fff;border-radius:12px;overflow:hidden;border:2px solid #ede5c8}
+.ct th{background:var(--orgL);padding:.75rem 1rem;text-align:left;font-weight:700;font-size:.75rem;text-transform:uppercase;color:#8a5a00;letter-spacing:.05em}
+.ct td{padding:.75rem 1rem;border-top:1px solid #ede5c8}
+.ct tr:hover td{background:#fffcf2}
+.ct .hl{background:#f0faf0}
+.cl{list-style:none;margin-top:1rem}
+.cl li{display:flex;align-items:flex-start;gap:.75rem;padding:.85rem 0;border-bottom:1px solid #ede5c8;font-size:.9rem}
+.cl li:last-child{border-bottom:none}
+.cl .ic{font-size:1.25rem;flex-shrink:0;margin-top:2px}
+.lb{font-weight:700}
+.dt{color:var(--dim);font-size:.82rem;margin-top:2px}
+.brg{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;margin-top:.5rem}
+.brc{background:#fff;border:2px solid #ede5c8;border-radius:16px;padding:1.25rem;display:flex;flex-direction:column;gap:.5rem}
+.brh{display:flex;align-items:center;gap:.5rem}
+.brh h4{font-size:1rem;font-weight:700}
+.brp{font-family:'Space Mono',monospace;font-size:.75rem;color:var(--acc)}
+.brc p{font-size:.8rem;color:var(--dim);line-height:1.45}
+.pg{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1rem;margin-top:.5rem}
+.pi{background:#fff;border:2px solid #fde0e0;border-radius:16px;padding:1.25rem}
+.pi h4{font-size:.95rem;font-weight:700;color:#c0392b;margin-bottom:.35rem}
+.pi p{font-size:.82rem;color:var(--dim);line-height:1.5}
+.pi .fx{margin-top:.5rem;font-size:.8rem;color:var(--grnD);font-weight:600}
+.s-q{background:linear-gradient(160deg,#3dab4f,#2a7a35);color:#fff;text-align:center;align-items:center}
+.s-q blockquote{font-size:1.6rem;font-weight:700;max-width:720px;line-height:1.45}
+.s-q .at{margin-top:1rem;font-size:.9rem;opacity:.8}
+.s-end{background:linear-gradient(160deg,#1a2e05,#2a4a10);color:#fff;text-align:center;align-items:center}
+.s-end h2{font-size:2.5rem;font-weight:800}
+.s-end p{color:rgba(255,255,255,.7);margin-top:.5rem;font-size:1rem}
+.acts{display:flex;gap:12px;margin-top:1.5rem;flex-wrap:wrap;justify-content:center}
+.ac{background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.25);padding:8px 20px;border-radius:24px;font-size:.85rem;font-weight:600}
+.co{background:#fef6e8;border:2px solid #f5c842;border-radius:12px;padding:1rem 1.25rem;margin-top:1rem;font-size:.85rem}
+.co strong{display:block;margin-bottom:.25rem}
+.co p{color:var(--dim)}
+</style>
+</head>
+<body>
+<div class="nd" id="nd"></div>
+<div class="sc" id="sc">1 / 11</div>
+
+<!-- 1 Title -->
+<div class="s s-title">
+<div class="hero">🍊</div>
+<h1>NFC 果汁选购指南</h1>
+<p class="sub">别再为配料表焦虑 — 三分钟搞懂怎么选真果汁</p>
+<div class="badges"><span class="bdg bo">Not From Concentrate</span><span class="bdg bg">零添加 · 冷压鲜榨</span></div>
+</div>
+
+<!-- 2 Dashboard -->
+<div class="s s-c">
+<h2>NFC 果汁市场一览</h2>
+<p class="intro">NFC = Not From Concentrate，非浓缩还原果汁。鲜果直接压榨，不加水不加糖，最大限度保留原味和营养。</p>
+<div class="fg">
+<div class="fc"><div class="fn">100%</div><div class="fl">纯果汁含量</div></div>
+<div class="fc"><div class="fn">&lt; 45天</div><div class="fl">冷藏保质期</div></div>
+<div class="fc"><div class="fn">5-15元</div><div class="fl">主流价格带 / 300ml</div></div>
+<div class="fc"><div class="fn">30%+</div><div class="fl">年复合增长率</div></div>
+</div>
+<div class="co"><strong>⚡ 核心认知</strong><p>超市货架上大部分「果汁」是浓缩还原汁（FC）或果汁饮料（含量 &lt; 100%）。NFC 是商业果汁中最接近鲜榨的品类。</p></div>
+</div>
+
+<!-- 3 Divider -->
+<div class="s s-div"><h2>🧪 果汁的三个等级</h2><p>从「果味水」到「真果汁」，差距比你想象的大</p></div>
+
+<!-- 4 Cards -->
+<div class="s s-c">
+<h2>三种果汁，本质不同</h2>
+<div class="cg">
+<div class="cd"><div class="em">🚰</div><h3>果汁饮料</h3><div class="sm">Juice Drink · 果汁含量 ≥ 10%</div><p>本质是「糖水 + 少量果汁 + 香精色素」。配料表第一位通常是水，第二位是白砂糖。</p><div class="tg"><span class="t tre">大量添加剂</span><span class="t to">果汁含量低</span><span class="t tbr">常温长保</span></div></div>
+<div class="cd"><div class="em">🔄</div><h3>FC 浓缩还原汁</h3><div class="sm">From Concentrate · 100%</div><p>先浓缩脱水运输，到工厂再加水还原。标注「100% 果汁」，但高温浓缩会损失风味和部分维生素。</p><div class="tg"><span class="t to">高温浓缩</span><span class="t tbl">加水还原</span><span class="t tgr">价格适中</span></div></div>
+<div class="cd"><div class="em">🍊</div><h3>NFC 非浓缩还原汁</h3><div class="sm">Not From Concentrate · 100% 鲜榨</div><p>鲜果冷压榨汁 → 瞬间杀菌 → 无菌灌装。不加水、不加糖、不加任何添加剂。最接近现榨。</p><div class="tg"><span class="t tgr">零添加</span><span class="t to">冷压鲜榨</span><span class="t tpu">需冷藏</span></div></div>
+</div>
+</div>
+
+<!-- 5 Table -->
+<div class="s s-c">
+<h2>三者详细对比</h2>
+<table class="ct">
+<thead><tr><th>对比维度</th><th>🚰 果汁饮料</th><th>🔄 FC 浓缩还原</th><th class="hl">🍊 NFC 鲜榨</th></tr></thead>
+<tbody>
+<tr><td><b>果汁含量</b></td><td>≥ 10%</td><td>100%（还原）</td><td class="hl">100%（原汁）</td></tr>
+<tr><td><b>加水</b></td><td>大量</td><td>加水还原</td><td class="hl">不加水</td></tr>
+<tr><td><b>添加剂</b></td><td>糖 / 香精 / 色素</td><td>部分加糖</td><td class="hl">不加</td></tr>
+<tr><td><b>工艺</b></td><td>—</td><td>高温浓缩→还原</td><td class="hl">冷压+瞬时杀菌</td></tr>
+<tr><td><b>风味</b></td><td>★☆☆</td><td>★★☆</td><td class="hl">★★★</td></tr>
+<tr><td><b>营养</b></td><td>极少</td><td>部分损失</td><td class="hl">接近鲜果</td></tr>
+<tr><td><b>保质期</b></td><td>6-12月</td><td>6-12月</td><td class="hl">冷藏28-45天</td></tr>
+<tr><td><b>价格/300ml</b></td><td>2-5元</td><td>4-8元</td><td class="hl">6-15元</td></tr>
+</tbody>
+</table>
+</div>
+
+<!-- 6 Divider -->
+<div class="s s-div g"><h2>🔍 选购四看</h2><p>学会这四步，再也不怕踩坑</p></div>
+
+<!-- 7 Checklist -->
+<div class="s s-c">
+<h2>NFC 果汁选购四步法</h2>
+<ul class="cl">
+<li><span class="ic">📋</span><div><div class="lb">第一看：配料表</div><div class="dt">配料表应只有一项：XX 汁。出现「水」「白砂糖」「浓缩XX汁」就不是真 NFC。有的标「100% 果汁」但配料实际是浓缩还原 — 以配料表为准。</div></div></li>
+<li><span class="ic">🌡️</span><div><div class="lb">第二看：杀菌方式</div><div class="dt"><b>冷灌装（低温瞬杀）</b>优于热灌装。冷灌装更好保留风味和营养，但保质期更短（~28天）。常温长保的「NFC」通常热灌装，风味打折。</div></div></li>
+<li><span class="ic">📅</span><div><div class="lb">第三看：保质期</div><div class="dt">正宗冷藏 NFC 保质期 28-45 天。标注「常温保存 6 个月」的大概率不是冷灌装 NFC。购买时注意生产日期，越新鲜越好。</div></div></li>
+<li><span class="ic">💰</span><div><div class="lb">第四看：价格带</div><div class="dt">冷藏 NFC 成本高（冷链+短保损耗），合理价格 6-15 元/300ml。低于 5 元需仔细看配料表；高于 20 元评估品牌溢价。</div></div></li>
+</ul>
+</div>
+
+<!-- 8 Brands -->
+<div class="s s-c">
+<h2>热门 NFC 品牌速览</h2>
+<p class="intro">以下品牌在国内主流渠道可买到，覆盖不同价位和口味偏好。</p>
+<div class="brg">
+<div class="brc"><div class="brh"><span style="font-size:1.5rem">🏔️</span><h4>农夫山泉 NFC</h4></div><div class="brp">~8 元 / 300ml</div><p>国内 NFC 推动者。橙汁、苹果香蕉、芒果三款经典。冷灌装，便利店铺货广，性价比首选。</p><div class="tg"><span class="t tgr">铺货广</span><span class="t to">性价比</span></div></div>
+<div class="brc"><div class="brh"><span style="font-size:1.5rem">💯</span><h4>颜值百分百</h4></div><div class="brp">~7 元 / 300ml</div><p>专注 NFC。进口巴西甜橙汁口碑好，口味丰富：橙汁、蓝莓、芒果、百香果。电商渠道强。</p><div class="tg"><span class="t tbl">进口原料</span><span class="t to">口味多</span></div></div>
+<div class="brc"><div class="brh"><span style="font-size:1.5rem">🟢</span><h4>佳果源</h4></div><div class="brp">~10 元 / 300ml</div><p>冷藏短保 NFC 代表。橙汁和苹果汁强项，口感接近现榨。盒马、山姆有售。</p><div class="tg"><span class="t tgr">冷藏短保</span><span class="t tpu">精品超市</span></div></div>
+<div class="brc"><div class="brh"><span style="font-size:1.5rem">🍋</span><h4>innocent</h4></div><div class="brp">~15 元 / 250ml</div><p>英国品牌（可口可乐旗下）。果昔系列口感浓郁，包装可爱。进口价格偏高。</p><div class="tg"><span class="t tbl">英国进口</span><span class="t tpu">果昔特色</span></div></div>
+<div class="brc"><div class="brh"><span style="font-size:1.5rem">🍊</span><h4>派森百</h4></div><div class="brp">~6 元 / 300ml</div><p>中粮旗下。主打重庆奉节脐橙 NFC 橙汁，产地直供，价格友好，口感偏清淡。</p><div class="tg"><span class="t tgr">国产产地</span><span class="t to">价格友好</span></div></div>
+<div class="brc"><div class="brh"><span style="font-size:1.5rem">🫐</span><h4>宝桑园</h4></div><div class="brp">~12 元 / 250ml</div><p>差异化路线，主打桑葚汁和蓝莓汁。花青素含量高，适合关注抗氧化的消费者。</p><div class="tg"><span class="t tpu">桑葚特色</span><span class="t tgr">花青素</span></div></div>
+</div>
+</div>
+
+<!-- 9 Pitfalls -->
+<div class="s s-c" style="background:#fef8f8">
+<h2>⚠️ 常见踩坑场景</h2>
+<div class="pg">
+<div class="pi"><h4>❌「100% 果汁」≠ NFC</h4><p>FC 浓缩还原汁也标「100% 果汁」，因为还原后含量确实 100%。区别在配料表有没有「水」和「浓缩XX汁」。</p><div class="fx">✅ 看配料表，不看正面广告语</div></div>
+<div class="pi"><h4>❌ 常温 NFC 风味差</h4><p>部分品牌常温长保 NFC（6+月），通过高温杀菌实现。虽然配料纯果汁，但高温明显破坏风味和维生素。</p><div class="fx">✅ 优先选冷藏短保款</div></div>
+<div class="pi"><h4>❌ 混合汁藏猫腻</h4><p>一些「NFC 混合果汁」用大量苹果汁做基底，加少量贵价果汁（蓝莓、石榴），正面突出贵价水果，实际占比可能不到 10%。</p><div class="fx">✅ 看配料表排序，排前面的占比最大</div></div>
+<div class="pi"><h4>❌ 价格低得不合理</h4><p>NFC 原料成本、冷链成本、短保损耗远高于 FC。低于 5 元/300ml 需仔细验证是否真冷灌装 NFC。</p><div class="fx">✅ 合理价格区间 6-15 元 / 300ml</div></div>
+</div>
+</div>
+
+<!-- 10 Quote -->
+<div class="s s-q">
+<blockquote>"好的果汁不需要加任何东西 — 水果本身就是最好的配方。选 NFC，本质上是在为「少加工」付费。"</blockquote>
+<p class="at">— 越简单的配料表，越值得信任</p>
+</div>
+
+<!-- 11 Closing -->
+<div class="s s-end">
+<div style="font-size:4rem;margin-bottom:1rem">🍊</div>
+<h2>三句话总结</h2>
+<p style="max-width:600px;margin:0 auto;margin-top:1rem;color:rgba(255,255,255,.85);font-size:1.05rem;line-height:1.7">
+配料表只有一种果汁 → 是 NFC<br>冷藏短保优于常温长保<br>6-15 元 / 300ml 是合理价格带
+</p>
+<div class="acts"><span class="ac">📋 看配料表</span><span class="ac">🌡️ 选冷藏</span><span class="ac">📅 买新鲜</span><span class="ac">💰 合理价位</span></div>
+<p style="margin-top:2.5rem;font-family:'Space Mono',monospace;font-size:.75rem;opacity:.4">Made by Ring 🍩 · 2026</p>
+</div>
+
+<script>
+!function(){var s=document.querySelectorAll('.s'),n=document.getElementById('nd'),c=document.getElementById('sc'),l=s.length;
+s.forEach(function(_,i){var d=document.createElement('button');d.className=i?'':'on';d.onclick=function(){s[i].scrollIntoView({behavior:'smooth'})};n.appendChild(d)});
+var ds=n.querySelectorAll('button');
+new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){var i=[].indexOf.call(s,e.target);ds.forEach(function(d,j){d.className=j===i?'on':''});c.textContent=(i+1)+' / '+l}})},{threshold:.5}).observe&&s.forEach(function(x){new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){var i=[].indexOf.call(s,e.target);ds.forEach(function(d,j){d.className=j===i?'on':''});c.textContent=(i+1)+' / '+l}})},{threshold:.5}).observe(x)});
+document.addEventListener('keydown',function(e){var a=[].findIndex.call(ds,function(d){return d.className==='on'});if(('ArrowRight ArrowDown').indexOf(e.key)>=0&&a<l-1){e.preventDefault();s[a+1].scrollIntoView({behavior:'smooth'})}if(('ArrowLeft ArrowUp').indexOf(e.key)>=0&&a>0){e.preventDefault();s[a-1].scrollIntoView({behavior:'smooth'})}})
+}();
+</script>
+</body>
+</html>
