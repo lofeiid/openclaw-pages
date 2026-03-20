@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>nfc 果汁选购指南</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Azeret+Mono:wght@400;500;600&family=DM+Sans:wght@400;500;700;800&family=IBM+Plex+Mono:wght@400;500&family=JetBrains+Mono:wght@400;500&family=Manrope:wght@400;500;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Sora:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0d1321;
+      --surface: #151d30;
+      --surface-alt: #1e293b;
+      --ink: #f8fafc;
+      --muted: #94a3b8;
+      --accent: #f97316;
+      --accent-soft: #2a1d16;
+      --accent-secondary: #38bdf8;
+      --shadow: 0 28px 72px rgba(13, 19, 33, 0.42);
+      --grid-line: rgba(56, 189, 248, 0.08);
+      --font-display: "Sora", sans-serif;
+      --font-body: "Sora", sans-serif;
+      --font-mono: "IBM Plex Mono", monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+      background:
+        radial-gradient(circle at top left, color-mix(in srgb, var(--accent) 16%, transparent), transparent 32rem),
+        radial-gradient(circle at bottom right, color-mix(in srgb, var(--accent-secondary) 18%, transparent), transparent 30rem),
+        var(--bg);
+      color: var(--ink);
+      font-family: var(--font-body);
+      overflow: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+        linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+      background-size: 4rem 4rem;
+      opacity: 0.5;
+      pointer-events: none;
+    }
+
+    .deck-shell {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      padding: clamp(1.4rem, 3vw, 2.7rem);
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      gap: 1rem;
+      opacity: 0;
+      transform: translateX(2.5rem) scale(0.985);
+      pointer-events: none;
+      transition: opacity 320ms ease, transform 420ms ease;
+    }
+
+    .slide.active {
+      opacity: 1;
+      transform: translateX(0) scale(1);
+      pointer-events: auto;
+    }
+
+    .chrome,
+    .footer,
+    .nav,
+    .dots {
+      display: flex;
+      align-items: center;
+    }
+
+    .chrome,
+    .footer {
+      justify-content: space-between;
+      gap: 1rem;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+    }
+
+    .nav,
+    .dots {
+      gap: 0.65rem;
+    }
+
+    .nav button,
+    .dot {
+      border: 0;
+      cursor: pointer;
+      transition: transform 180ms ease, opacity 180ms ease, background 180ms ease;
+    }
+
+    .nav button {
+      padding: 0.55rem 0.9rem;
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--surface) 82%, transparent);
+      color: var(--ink);
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+    }
+
+    .nav button:hover,
+    .nav button:focus-visible {
+      transform: translateY(-1px);
+      background: color-mix(in srgb, var(--accent-soft) 58%, var(--surface));
+      outline: none;
+    }
+
+    .dot {
+      width: 0.55rem;
+      height: 0.55rem;
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--muted) 72%, transparent);
+      opacity: 0.45;
+    }
+
+    .dot.active {
+      opacity: 1;
+      transform: scale(1.35);
+      background: var(--accent);
+    }
+
+    .slide-body {
+      min-height: 0;
+      display: grid;
+      gap: 1.15rem;
+      align-content: center;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--muted);
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 1.8rem;
+      height: 1px;
+      background: var(--accent);
+    }
+
+    h1,
+    h2,
+    strong {
+      font-family: var(--font-display);
+      margin: 0;
+    }
+
+    h1 {
+      font-size: clamp(3.1rem, 8.5vw, 6.6rem);
+      line-height: 0.95;
+      letter-spacing: -0.05em;
+      max-width: 12ch;
+    }
+
+    h2 {
+      font-size: clamp(2.15rem, 6vw, 4.3rem);
+      line-height: 0.98;
+      letter-spacing: -0.04em;
+      max-width: 13ch;
+    }
+
+    .subhead,
+    .intro,
+    .statement,
+    .quote-attribution,
+    .split-panel p,
+    .card p,
+    .stat-card p,
+    .timeline-step p {
+      color: var(--muted);
+      line-height: 1.65;
+      margin: 0;
+      font-size: clamp(0.98rem, 2vw, 1.22rem);
+    }
+
+    .hero-panel,
+    .card,
+    .split-panel,
+    .stat-card,
+    .table-shell,
+    .timeline-step {
+      border-radius: 1.45rem;
+      background: color-mix(in srgb, var(--surface) 88%, transparent);
+      border: 1px solid color-mix(in srgb, var(--accent) 18%, transparent);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(14px);
+    }
+
+    .hero-panel {
+      padding: clamp(1.5rem, 3vw, 2.2rem);
+      max-width: 64rem;
+      display: grid;
+      gap: 1.1rem;
+    }
+
+    .title-slide {
+      justify-items: start;
+    }
+
+    .hero-emoji {
+      font-size: clamp(4rem, 8vw, 6.2rem);
+      line-height: 1;
+      animation: bounce-in 1800ms ease-in-out infinite;
+    }
+
+    .metrics-grid,
+    .cards-grid,
+    .stat-grid {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .metrics-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .metric-chip {
+      padding: 0.9rem 1rem;
+      border-radius: 1rem;
+      background: color-mix(in srgb, var(--accent-soft) 56%, var(--surface));
+      display: grid;
+      gap: 0.3rem;
+    }
+
+    .metric-label,
+    .stat-label,
+    .timeline-label,
+    .bleed-badge {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .metric-chip strong,
+    .stat-value {
+      font-size: clamp(1.15rem, 2.5vw, 2rem);
+      line-height: 1.05;
+      color: var(--ink);
+    }
+
+    .divider-slide,
+    .quote-slide,
+    .full-bleed-slide {
+      justify-items: center;
+      text-align: center;
+    }
+
+    .divider-mark {
+      font-family: var(--font-display);
+      font-size: clamp(5rem, 18vw, 12rem);
+      line-height: 0.82;
+      color: color-mix(in srgb, var(--accent) 14%, transparent);
+    }
+
+    .cards-grid {
+      grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+    }
+
+    .card {
+      padding: 1.2rem 1.1rem;
+      min-height: 12rem;
+      display: grid;
+      gap: 0.5rem;
+      align-content: start;
+    }
+
+    .card-emoji {
+      font-size: 2rem;
+      line-height: 1;
+    }
+
+    .card strong,
+    .split-panel strong,
+    .timeline-step strong {
+      font-size: 1.05rem;
+      line-height: 1.3;
+      color: var(--ink);
+    }
+
+    .card span {
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+
+    .split-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+    }
+
+    .split-panel {
+      padding: 1.2rem 1.15rem;
+      display: grid;
+      gap: 0.75rem;
+    }
+
+    .split-panel.alt {
+      background: color-mix(in srgb, var(--surface-alt) 88%, transparent);
+      border-color: color-mix(in srgb, var(--accent-secondary) 18%, transparent);
+    }
+
+    .bullet-list,
+    .action-list {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 0.65rem;
+    }
+
+    .bullet-item,
+    .action-item {
+      position: relative;
+      padding-left: 1.05rem;
+      line-height: 1.55;
+      color: var(--muted);
+    }
+
+    .bullet-item::before,
+    .action-item::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0.78em;
+      width: 0.42rem;
+      height: 0.42rem;
+      border-radius: 999px;
+      background: var(--accent);
+      transform: translateY(-50%);
+    }
+
+    .stat-grid {
+      grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+    }
+
+    .stat-card {
+      padding: 1.25rem 1.1rem;
+      display: grid;
+      gap: 0.45rem;
+      min-height: 12rem;
+      align-content: start;
+    }
+
+    .table-shell {
+      overflow: hidden;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.95rem;
+    }
+
+    th,
+    td {
+      padding: 0.9rem 1rem;
+      border-bottom: 1px solid color-mix(in srgb, var(--accent) 12%, transparent);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    td {
+      color: var(--ink);
+      line-height: 1.55;
+    }
+
+    .quote-mark {
+      font-size: clamp(4rem, 10vw, 7rem);
+      line-height: 0.8;
+      color: color-mix(in srgb, var(--accent) 24%, transparent);
+    }
+
+    blockquote {
+      margin: 0;
+      max-width: 20ch;
+      font-family: var(--font-display);
+      font-size: clamp(1.8rem, 4.2vw, 3.2rem);
+      line-height: 1.16;
+      letter-spacing: -0.03em;
+    }
+
+    .timeline-grid {
+      display: grid;
+      gap: 0.9rem;
+    }
+
+    .timeline-step {
+      padding: 1rem 1.05rem;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 1rem;
+      align-items: start;
+    }
+
+    .timeline-label {
+      width: 3.4rem;
+      min-width: 3.4rem;
+      min-height: 3.4rem;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: color-mix(in srgb, var(--accent-soft) 70%, var(--surface));
+      color: var(--accent);
+    }
+
+    .full-bleed-slide {
+      border-radius: 2rem;
+      padding: clamp(2rem, 5vw, 3.5rem);
+      background:
+        linear-gradient(140deg, color-mix(in srgb, var(--accent) 24%, transparent), transparent 45%),
+        linear-gradient(120deg, color-mix(in srgb, var(--accent-secondary) 18%, transparent), transparent 52%),
+        color-mix(in srgb, var(--surface-alt) 84%, var(--bg));
+      border: 1px solid color-mix(in srgb, var(--accent) 18%, transparent);
+      box-shadow: var(--shadow);
+    }
+
+    .bleed-badge {
+      display: inline-flex;
+      width: fit-content;
+      padding: 0.45rem 0.75rem;
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--accent-soft) 60%, transparent);
+      color: var(--ink);
+    }
+
+    .closing-slide .hero-panel {
+      max-width: 60rem;
+    }
+
+    body.theme-lantern-bazaar,
+    body.theme-ramen-editorial,
+    body.theme-banana-sunrise {
+      background:
+        radial-gradient(circle at 18% 12%, color-mix(in srgb, var(--accent) 22%, transparent), transparent 24rem),
+        radial-gradient(circle at 82% 82%, color-mix(in srgb, var(--accent-secondary) 18%, transparent), transparent 24rem),
+        linear-gradient(180deg, color-mix(in srgb, white 64%, var(--bg)), var(--bg));
+    }
+
+    body.theme-lantern-bazaar::before,
+    body.theme-ramen-editorial::before,
+    body.theme-banana-sunrise::before {
+      background-image:
+        linear-gradient(to right, color-mix(in srgb, var(--accent) 10%, transparent) 1px, transparent 1px),
+        linear-gradient(to bottom, color-mix(in srgb, var(--accent-secondary) 8%, transparent) 1px, transparent 1px);
+      background-size: 6rem 6rem;
+      opacity: 0.35;
+    }
+
+    .theme-lantern-bazaar .hero-panel,
+    .theme-lantern-bazaar .card,
+    .theme-lantern-bazaar .split-panel,
+    .theme-lantern-bazaar .stat-card,
+    .theme-lantern-bazaar .timeline-step,
+    .theme-ramen-editorial .hero-panel,
+    .theme-ramen-editorial .card,
+    .theme-ramen-editorial .split-panel,
+    .theme-ramen-editorial .stat-card,
+    .theme-ramen-editorial .timeline-step {
+      border-radius: 2rem;
+      box-shadow: 0 18px 48px rgba(118, 55, 10, 0.14);
+      backdrop-filter: none;
+    }
+
+    .theme-lantern-bazaar .full-bleed-slide,
+    .theme-ramen-editorial .full-bleed-slide {
+      background:
+        linear-gradient(155deg, color-mix(in srgb, var(--accent-soft) 82%, white), transparent 55%),
+        linear-gradient(120deg, color-mix(in srgb, var(--accent-secondary) 12%, transparent), transparent 60%),
+        color-mix(in srgb, white 76%, var(--surface-alt));
+    }
+
+    .theme-market-grid .hero-panel,
+    .theme-signal-terminal .hero-panel,
+    .theme-circuit-board .hero-panel,
+    .theme-market-grid .card,
+    .theme-signal-terminal .card,
+    .theme-circuit-board .card,
+    .theme-market-grid .split-panel,
+    .theme-signal-terminal .split-panel,
+    .theme-circuit-board .split-panel,
+    .theme-market-grid .stat-card,
+    .theme-signal-terminal .stat-card,
+    .theme-circuit-board .stat-card,
+    .theme-market-grid .timeline-step,
+    .theme-signal-terminal .timeline-step,
+    .theme-circuit-board .timeline-step {
+      border-radius: 1rem;
+      backdrop-filter: blur(18px);
+      border-color: color-mix(in srgb, var(--accent-secondary) 24%, transparent);
+    }
+
+    .theme-market-grid .chrome,
+    .theme-market-grid .footer,
+    .theme-signal-terminal .chrome,
+    .theme-signal-terminal .footer,
+    .theme-circuit-board .chrome,
+    .theme-circuit-board .footer {
+      letter-spacing: 0.18em;
+    }
+
+    .theme-market-grid h1,
+    .theme-signal-terminal h1,
+    .theme-circuit-board h1 {
+      max-width: 10ch;
+      text-transform: uppercase;
+    }
+
+    .theme-market-grid .full-bleed-slide,
+    .theme-signal-terminal .full-bleed-slide,
+    .theme-circuit-board .full-bleed-slide {
+      background:
+        linear-gradient(135deg, color-mix(in srgb, var(--accent) 22%, transparent), transparent 32%),
+        linear-gradient(135deg, color-mix(in srgb, var(--accent-secondary) 14%, transparent), transparent 56%),
+        color-mix(in srgb, var(--surface-alt) 88%, black);
+      border-radius: 1.2rem;
+    }
+
+    .theme-paper-atlas .hero-panel,
+    .theme-paper-atlas .card,
+    .theme-paper-atlas .split-panel,
+    .theme-paper-atlas .stat-card,
+    .theme-paper-atlas .timeline-step {
+      backdrop-filter: none;
+      border-color: rgba(35, 27, 20, 0.08);
+    }
+
+    body.theme-paper-atlas::before {
+      opacity: 0.22;
+    }
+
+    @keyframes bounce-in {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    @media (max-width: 880px) {
+      .split-grid,
+      .metrics-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .footer {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body class="theme-studio-pulse">
+  <main class="deck-shell" id="deck">
+    <article class="slide active">
+      <div class="chrome">
+        <span>title</span>
+        <span data-page></span>
+      </div>
+    
+          <section class="slide-body title-slide">
+            <div class="eyebrow">Presentation Factory</div>
+            <div class="hero-emoji">✨</div>
+            <h1>nfc 果汁选购指南</h1>
+            <div class="hero-panel">
+              <p class="subhead">从概念、结构和交付动作三层切入，帮助观众快速建立对 nfc 果汁选购 的完整认知。</p>
+              <div class="metrics-grid">
+        <article class="metric-chip">
+          <span class="metric-label">Audience</span>
+          <strong>General</strong>
+          <p>这套 deck 主要为谁讲</p>
+        </article>
+        
+        <article class="metric-chip">
+          <span class="metric-label">Mode</span>
+          <strong>Guide</strong>
+          <p>叙事结构的主模式</p>
+        </article>
+        
+        <article class="metric-chip">
+          <span class="metric-label">Deck DNA</span>
+          <strong>General explainer</strong>
+          <p>主题对应的内容与视觉骨架</p>
+        </article>
+        </div>
+            </div>
+          </section>
+        
+      <div class="footer">
+        <div class="nav">
+          <button type="button" data-action="prev">Prev</button>
+          <button type="button" data-action="next">Next</button>
+        </div>
+        <div class="dots"><button type="button" class="dot" data-action="jump" data-index="0" aria-label="Jump to slide 1"></button><button type="button" class="dot" data-action="jump" data-index="1" aria-label="Jump to slide 2"></button><button type="button" class="dot" data-action="jump" data-index="2" aria-label="Jump to slide 3"></button><button type="button" class="dot" data-action="jump" data-index="3" aria-label="Jump to slide 4"></button><button type="button" class="dot" data-action="jump" data-index="4" aria-label="Jump to slide 5"></button><button type="button" class="dot" data-action="jump" data-index="5" aria-label="Jump to slide 6"></button><button type="button" class="dot" data-action="jump" data-index="6" aria-label="Jump to slide 7"></button><button type="button" class="dot" data-action="jump" data-index="7" aria-label="Jump to slide 8"></button><button type="button" class="dot" data-action="jump" data-index="8" aria-label="Jump to slide 9"></button></div>
+      </div>
+    </article><article class="slide">
+      <div class="chrome">
+        <span>divider</span>
+        <span data-page></span>
+      </div>
+    
+          <section class="slide-body divider-slide">
+            <div class="divider-mark">02</div>
+            <h2>先建立共同语言</h2>
+            <p class="subhead">讲 nfc 果汁选购 之前，先让观众知道它是什么、为什么值得听。</p>
+          </section>
+        
+      <div class="footer">
+        <div class="nav">
+          <button type="button" data-action="prev">Prev</button>
+          <button type="button" data-action="next">Next</button>
+        </div>
+        <div class="dots"><button type="button" class="dot" data-action="jump" data-index="0" aria-label="Jump to slide 1"></button><button type="button" class="dot" data-action="jump" data-index="1" aria-label="Jump to slide 2"></button><button type="button" class="dot" data-action="jump" data-index="2" aria-label="Jump to slide 3"></button><button type="button" class="dot" data-action="jump" data-index="3" aria-label="Jump to slide 4"></button><button type="button" class="dot" data-action="jump" data-index="4" aria-label="Jump to slide 5"></button><button type="button" class="dot" data-action="jump" data-index="5" aria-label="Jump to slide 6"></button><button type="button" class="dot" data-action="jump" data-index="6" aria-label="Jump to slide 7"></button><button type="button" class="dot" data-action="jump" data-index="7" aria-label="Jump to slide 8"></button><button type="button" class="dot" data-action="jump" data-index="8" aria-label="Jump to slide 9"></button></div>
+      </div>
+    </article><article class="slide">
+      <div class="chrome">
+        <span>split</span>
+        <span data-page></span>
+      </div>
+    
+          <section class="slide-body">
+            
+            <h2>nfc 果汁选购 的最好开场方式</h2>
+            <div class="split-grid">
+              <article class="split-panel">
+                <strong>先说清它是什么</strong>
+                <p>把 nfc 果汁选购 的定义、范围和使用边界先讲明白，观众才不会在细节里迷路。</p>
+                <ul class="bullet-list"><li class="bullet-item">一句话定义，不超过 20 秒</li><li class="bullet-item">避免一开始就进入术语和实现细节</li><li class="bullet-item">先给认知框架，再讲操作路径</li></ul>
+              </article>
+              <article class="split-panel alt">
+                <strong>再说为什么重要</strong>
+                <p>观众会继续听下去，取决于你有没有讲出 nfc 果汁选购 的价值和现实影响。</p>
+                <ul class="bullet-list"><li class="bullet-item">价值点要面向目标受众</li><li class="bullet-item">把收益、效率或清晰度讲出来</li><li class="bullet-item">用结果感而不是堆功能名</li></ul>
+              </article>
+            </div>
+          </section>
+        
+      <div class="footer">
+        <div class="nav">
+          <button type="button" data-action="prev">Prev</button>
+          <button type="button" data-action="next">Next</button>
+        </div>
+        <div class="dots"><button type="button" class="dot" data-action="jump" data-index="0" aria-label="Jump to slide 1"></button><button type="button" class="dot" data-action="jump" data-index="1" aria-label="Jump to slide 2"></button><button type="button" class="dot" data-action="jump" data-index="2" aria-label="Jump to slide 3"></button><button type="button" class="dot" data-action="jump" data-index="3" aria-label="Jump to slide 4"></button><button type="button" class="dot" data-action="jump" data-index="4" aria-label="Jump to slide 5"></button><button type="button" class="dot" data-action="jump" data-index="5" aria-label="Jump to slide 6"></button><button type="button" class="dot" data-action="jump" data-index="6" aria-label="Jump to slide 7"></button><button type="button" class="dot" data-action="jump" data-index="7" aria-label="Jump to slide 8"></button><button type="button" class="dot" data-action="jump" data-index="8" aria-label="Jump to slide 9"></button></div>
+      </div>
+    </article><article class="slide">
+      <div class="chrome">
+        <span>cards</span>
+        <span data-page></span>
+      </div>
+    
+          <section class="slide-body">
+            
+            <h2>讲 nfc 果汁选购 时，最值得保留的 4 个维度</h2>
+            <p class="intro">让 deck 有用的关键，不是堆更多页，而是每页围绕一个判断维度展开。</p>
+            <div class="cards-grid">
+        <article class="card">
+          <div class="card-emoji">🧠</div>
+          <strong>概念层</strong>
+          <span>它是什么</span>
+          <p>先建立统一理解，再进入细节</p>
+        </article>
+        
+        <article class="card">
+          <div class="card-emoji">🗺️</div>
+          <strong>结构层</strong>
+          <span>它由什么组成</span>
+          <p>用分层或模块帮助观众记忆</p>
+        </article>
+        
+        <article class="card">
+          <div class="card-emoji">⚙️</div>
+          <strong>动作层</strong>
+          <span>应该怎么做</span>
+          <p>把知道变成可执行步骤</p>
+        </article>
+        
+        <article class="card">
+          <div class="card-emoji">✅</div>
+          <strong>结果层</strong>
+          <span>做到后会怎样</span>
+          <p>用结果感强化价值</p>
+        </article>
+        </div>
+          </section>
+        
+      <div class="footer">
+        <div class="nav">
+          <button type="button" data-action="prev">Prev</button>
+          <button type="button" data-action="next">Next</button>
+        </div>
+        <div class="dots"><button type="button" class="dot" data-action="jump" data-index="0" aria-label="Jump to slide 1"></button><button type="button" class="dot" data-action="jump" data-index="1" aria-label="Jump to slide 2"></button><button type="button" class="dot" data-action="jump" data-index="2" aria-label="Jump to slide 3"></button><button type="button" class="dot" data-action="jump" data-index="3" aria-label="Jump to slide 4"></button><button type="button" class="dot" data-action="jump" data-index="4" aria-label="Jump to slide 5"></button><button type="button" class="dot" data-action="jump" data-index="5" aria-label="Jump to slide 6"></button><button type="button" class="dot" data-action="jump" data-index="6" aria-label="Jump to slide 7"></button><button type="button" class="dot" data-action="jump" data-index="7" aria-label="Jump to slide 8"></button><button type="button" class="dot" data-action="jump" data-index="8" aria-label="Jump to slide 9"></button></div>
+      </div>
+    </article><article class="slide">
+      <div class="chrome">
+        <span>timeline</span>
+        <span data-page></span>
+      </div>
+    
+          <section class="slide-body">
+            
+            <h2>nfc 果汁选购 的推荐讲解顺序</h2>
+            <div class="timeline-grid">
+        <article class="timeline-step">
+          <span class="timeline-label">01</span>
+          <div>
+            <strong>给出总图</strong>
+            <p>一句话说清是什么，再告诉观众今天会覆盖什么。</p>
+          </div>
+        </article>
+        
+        <article class="timeline-step">
+          <span class="timeline-label">02</span>
+          <div>
+            <strong>拆成结构</strong>
+            <p>把核心模块或关键环节拆成 3-4 个块。</p>
+          </div>
+        </article>
+        
+        <article class="timeline-step">
+          <span class="timeline-label">03</span>
+          <div>
+            <strong>讲操作动作</strong>
+            <p>说明每一步该怎么推进，避免空洞概念。</p>
+          </div>
+        </article>
+        
+        <article class="timeline-step">
+          <span class="timeline-label">04</span>
+          <div>
+            <strong>用结论收口</strong>
+            <p>最后留下可执行建议，而不是只停在知识点。</p>
+          </div>
+        </article>
+        </div>
+          </section>
+        
+      <div class="footer">
+        <div class="nav">
+          <button type="button" data-action="prev">Prev</button>
+          <button type="button" data-action="next">Next</button>
+        </div>
+        <div class="dots"><button type="button" class="dot" data-action="jump" data-index="0" aria-label="Jump to slide 1"></button><button type="button" class="dot" data-action="jump" data-index="1" aria-label="Jump to slide 2"></button><button type="button" class="dot" data-action="jump" data-index="2" aria-label="Jump to slide 3"></button><button type="button" class="dot" data-action="jump" data-index="3" aria-label="Jump to slide 4"></button><button type="button" class="dot" data-action="jump" data-index="4" aria-label="Jump to slide 5"></button><button type="button" class="dot" data-action="jump" data-index="5" aria-label="Jump to slide 6"></button><button type="button" class="dot" data-action="jump" data-index="6" aria-label="Jump to slide 7"></button><button type="button" class="dot" data-action="jump" data-index="7" aria-label="Jump to slide 8"></button><button type="button" class="dot" data-action="jump" data-index="8" aria-label="Jump to slide 9"></button></div>
+      </div>
+    </article><article class="slide">
+      <div class="chrome">
+        <span>dashboard</span>
+        <span data-page></span>
+      </div>
+    
+          <section class="slide-body">
+            
+            <h2>一份好用的 nfc 果汁选购 deck 应该守住哪些信号</h2>
+            <p class="intro">这里不是 KPI，而是讲解质量的可感知标准。</p>
+            <div class="stat-grid">
+        <article class="stat-card">
+          <span class="stat-label">Pacing</span>
+          <strong class="stat-value">1 主题 / 页</strong>
+          <p>一页只承载一个主判断</p>
+        </article>
+        
+        <article class="stat-card">
+          <span class="stat-label">Contrast</span>
+          <strong class="stat-value">至少 2 次</strong>
+          <p>用对比或章节切换制造节奏</p>
+        </article>
+        
+        <article class="stat-card">
+          <span class="stat-label">Actionability</span>
+          <strong class="stat-value">结尾必须有</strong>
+          <p>让听众知道下一步怎么做</p>
+        </article>
+        
+        <article class="stat-card">
+          <span class="stat-label">Readability</span>
+          <strong class="stat-value">大字优先</strong>
+          <p>优先建立视线层级，不先塞满文字</p>
+        </article>
+        </div>
+          </section>
+        
+      <div class="footer">
+        <div class="nav">
+          <button type="button" data-action="prev">Prev</button>
+          <button type="button" data-action="next">Next</button>
+        </div>
+        <div class="dots"><button type="button" class="dot" data-action="jump" data-index="0" aria-label="Jump to slide 1"></button><button type="button" class="dot" data-action="jump" data-index="1" aria-label="Jump to slide 2"></button><button type="button" class="dot" data-action="jump" data-index="2" aria-label="Jump to slide 3"></button><button type="button" class="dot" data-action="jump" data-index="3" aria-label="Jump to slide 4"></button><button type="button" class="dot" data-action="jump" data-index="4" aria-label="Jump to slide 5"></button><button type="button" class="dot" data-action="jump" data-index="5" aria-label="Jump to slide 6"></button><button type="button" class="dot" data-action="jump" data-index="6" aria-label="Jump to slide 7"></button><button type="button" class="dot" data-action="jump" data-index="7" aria-label="Jump to slide 8"></button><button type="button" class="dot" data-action="jump" data-index="8" aria-label="Jump to slide 9"></button></div>
+      </div>
+    </article><article class="slide">
+      <div class="chrome">
+        <span>quote</span>
+        <span data-page></span>
+      </div>
+    
+          <section class="slide-body quote-slide">
+            
+            <span class="quote-mark">“</span>
+            <h2>关键原则</h2>
+            <blockquote>真正让 nfc 果汁选购 讲明白的，不是资料更多，而是先让人看见方向，再带他进入细节。</blockquote>
+            <p class="quote-attribution">Presentation Factory</p>
+          </section>
+        
+      <div class="footer">
+        <div class="nav">
+          <button type="button" data-action="prev">Prev</button>
+          <button type="button" data-action="next">Next</button>
+        </div>
+        <div class="dots"><button type="button" class="dot" data-action="jump" data-index="0" aria-label="Jump to slide 1"></button><button type="button" class="dot" data-action="jump" data-index="1" aria-label="Jump to slide 2"></button><button type="button" class="dot" data-action="jump" data-index="2" aria-label="Jump to slide 3"></button><button type="button" class="dot" data-action="jump" data-index="3" aria-label="Jump to slide 4"></button><button type="button" class="dot" data-action="jump" data-index="4" aria-label="Jump to slide 5"></button><button type="button" class="dot" data-action="jump" data-index="5" aria-label="Jump to slide 6"></button><button type="button" class="dot" data-action="jump" data-index="6" aria-label="Jump to slide 7"></button><button type="button" class="dot" data-action="jump" data-index="7" aria-label="Jump to slide 8"></button><button type="button" class="dot" data-action="jump" data-index="8" aria-label="Jump to slide 9"></button></div>
+      </div>
+    </article><article class="slide">
+      <div class="chrome">
+        <span>full-bleed</span>
+        <span data-page></span>
+      </div>
+    
+          <section class="slide-body full-bleed-slide">
+            
+            <span class="bleed-badge">Narrative momentum</span>
+            <h2>让 nfc 果汁选购 从“能看”升级到“想继续看”</h2>
+            <p class="subhead">封面有记忆点，过渡有节奏，信息密度和视觉重量匹配，观众才会跟着你的叙事走。</p>
+          </section>
+        
+      <div class="footer">
+        <div class="nav">
+          <button type="button" data-action="prev">Prev</button>
+          <button type="button" data-action="next">Next</button>
+        </div>
+        <div class="dots"><button type="button" class="dot" data-action="jump" data-index="0" aria-label="Jump to slide 1"></button><button type="button" class="dot" data-action="jump" data-index="1" aria-label="Jump to slide 2"></button><button type="button" class="dot" data-action="jump" data-index="2" aria-label="Jump to slide 3"></button><button type="button" class="dot" data-action="jump" data-index="3" aria-label="Jump to slide 4"></button><button type="button" class="dot" data-action="jump" data-index="4" aria-label="Jump to slide 5"></button><button type="button" class="dot" data-action="jump" data-index="5" aria-label="Jump to slide 6"></button><button type="button" class="dot" data-action="jump" data-index="6" aria-label="Jump to slide 7"></button><button type="button" class="dot" data-action="jump" data-index="7" aria-label="Jump to slide 8"></button><button type="button" class="dot" data-action="jump" data-index="8" aria-label="Jump to slide 9"></button></div>
+      </div>
+    </article><article class="slide">
+      <div class="chrome">
+        <span>closing</span>
+        <span data-page></span>
+      </div>
+    
+          <section class="slide-body closing-slide">
+            
+            <h2>把 nfc 果汁选购 讲成一份好 deck</h2>
+            <div class="hero-panel">
+              <p class="statement">先用视觉方向建立气质，再用结构和节奏建立理解，最后用可执行建议完成闭环。</p>
+              <ul class="action-list"><li class="action-item">先定受众和调性，再定主题与字体</li><li class="action-item">先排 slide 类型，再填内容细节</li><li class="action-item">导出 PPTX 或发布飞书之前，先验证 HTML 版节奏</li></ul>
+            </div>
+          </section>
+        
+      <div class="footer">
+        <div class="nav">
+          <button type="button" data-action="prev">Prev</button>
+          <button type="button" data-action="next">Next</button>
+        </div>
+        <div class="dots"><button type="button" class="dot" data-action="jump" data-index="0" aria-label="Jump to slide 1"></button><button type="button" class="dot" data-action="jump" data-index="1" aria-label="Jump to slide 2"></button><button type="button" class="dot" data-action="jump" data-index="2" aria-label="Jump to slide 3"></button><button type="button" class="dot" data-action="jump" data-index="3" aria-label="Jump to slide 4"></button><button type="button" class="dot" data-action="jump" data-index="4" aria-label="Jump to slide 5"></button><button type="button" class="dot" data-action="jump" data-index="5" aria-label="Jump to slide 6"></button><button type="button" class="dot" data-action="jump" data-index="6" aria-label="Jump to slide 7"></button><button type="button" class="dot" data-action="jump" data-index="7" aria-label="Jump to slide 8"></button><button type="button" class="dot" data-action="jump" data-index="8" aria-label="Jump to slide 9"></button></div>
+      </div>
+    </article>
+  </main>
+  <script>
+    const slides = Array.from(document.querySelectorAll(".slide"));
+    const dots = Array.from(document.querySelectorAll(".dot"));
+    const pages = Array.from(document.querySelectorAll("[data-page]"));
+    let current = 0;
+
+    function render() {
+      slides.forEach((slide, index) => slide.classList.toggle("active", index === current));
+      dots.forEach((dot, index) => dot.classList.toggle("active", index === current));
+      pages.forEach((page) => {
+        page.textContent = String(current + 1).padStart(2, "0") + " / " + String(slides.length).padStart(2, "0");
+      });
+    }
+
+    function goTo(index) {
+      current = Math.max(0, Math.min(index, slides.length - 1));
+      render();
+    }
+
+    document.addEventListener("click", (event) => {
+      const target = event.target.closest("[data-action]");
+      if (!target) return;
+      const action = target.getAttribute("data-action");
+      if (action === "prev") goTo(current - 1);
+      if (action === "next") goTo(current + 1);
+      if (action === "jump") goTo(Number(target.getAttribute("data-index") || "0"));
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (["ArrowRight", "ArrowDown", "PageDown", " "].includes(event.key)) {
+        event.preventDefault();
+        goTo(current + 1);
+      }
+      if (["ArrowLeft", "ArrowUp", "PageUp"].includes(event.key)) {
+        event.preventDefault();
+        goTo(current - 1);
+      }
+      if (event.key === "Home") goTo(0);
+      if (event.key === "End") goTo(slides.length - 1);
+    });
+
+    render();
+  </script>
+</body>
+</html>
