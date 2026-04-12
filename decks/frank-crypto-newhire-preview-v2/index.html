@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Frank 新版演讲 PPT 预览</title>
+  <style>
+    :root{
+      --bg:#0b1020;--panel:#121a2f;--panel2:#18233f;--ink:#f5f7fb;--muted:#9aa7bd;--accent:#67e8f9;--accent2:#f59e0b;--line:rgba(255,255,255,.08);
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;background:radial-gradient(circle at top left,rgba(103,232,249,.10),transparent 28%),radial-gradient(circle at bottom right,rgba(245,158,11,.10),transparent 28%),var(--bg);color:var(--ink)}
+    .deck{height:100vh;overflow:hidden;position:relative}
+    .slide{display:none;height:100vh;padding:54px 64px 80px;gap:22px}
+    .slide.active{display:grid;grid-template-rows:auto auto 1fr auto}
+    .eyebrow{font-size:14px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-weight:700}
+    h1{margin:0;font-size:54px;line-height:1.05;max-width:1100px}
+    h2{margin:0;font-size:38px;line-height:1.15;max-width:1100px}
+    .sub{font-size:20px;color:var(--muted);max-width:980px;line-height:1.6}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+    .grid.two{grid-template-columns:repeat(2,1fr)}
+    .grid.four{grid-template-columns:repeat(4,1fr)}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02));border:1px solid var(--line);border-radius:20px;padding:22px 22px 20px;box-shadow:0 18px 40px rgba(0,0,0,.22)}
+    .card h3{margin:0 0 10px;font-size:22px}
+    .card p{margin:0;color:var(--muted);font-size:16px;line-height:1.6}
+    ul{margin:0;padding-left:22px;display:grid;gap:10px;font-size:22px;line-height:1.5}
+    li::marker{color:var(--accent2)}
+    .big-quote{font-size:44px;line-height:1.25;max-width:1100px;font-weight:800}
+    .footer{display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:14px}
+    .pill{display:inline-block;padding:8px 12px;border:1px solid var(--line);border-radius:999px;color:var(--ink);background:rgba(255,255,255,.04);font-size:14px;margin-right:8px}
+    .metric{font-size:34px;font-weight:800;margin-bottom:8px}
+    .table{display:grid;grid-template-columns:1.2fr 1fr 1fr 1fr;border:1px solid var(--line);border-radius:20px;overflow:hidden}
+    .cell{padding:18px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);background:rgba(255,255,255,.03);font-size:17px;line-height:1.55}
+    .head{background:rgba(103,232,249,.10);font-weight:800}
+    .hero{display:grid;grid-template-columns:1.25fr .9fr;gap:22px}
+    .hero-box{background:linear-gradient(135deg,rgba(103,232,249,.14),rgba(245,158,11,.10));border:1px solid var(--line);border-radius:24px;padding:24px}
+    .nav{position:fixed;right:18px;bottom:18px;display:flex;gap:10px;z-index:3}
+    button{border:1px solid var(--line);background:#16213a;color:#fff;border-radius:12px;padding:10px 14px;font-size:14px;cursor:pointer}
+    .dots{position:fixed;left:18px;bottom:18px;color:var(--muted);font-size:14px}
+    @media (max-width: 900px){.slide{padding:28px 22px 74px}h1{font-size:36px}h2{font-size:28px}.sub,ul{font-size:18px}.grid,.grid.two,.grid.four,.hero,.table{grid-template-columns:1fr}.slide{overflow:auto}}
+  </style>
+</head>
+<body>
+  <div class="deck">
+    <section class="slide active">
+      <div class="eyebrow">Frank 新版演讲 / 新员工培训</div>
+      <h1>从交易所产品到现实世界连接，理解 Crypto 平台的产品逻辑与行业趋势</h1>
+      <div class="sub">这不是一场功能说明会，而是一张完整地图。先看平台怎么组织资金、流动性和风险，再看它为什么会继续接入真实世界资产、支付与预期。</div>
+      <div class="hero">
+        <div class="hero-box">
+          <span class="pill">产品地图</span><span class="pill">交易机制</span><span class="pill">行业演进</span>
+          <ul style="margin-top:18px">
+            <li>先建立地图，再理解页面和按钮</li>
+            <li>先看用户旅程，再看单个产品</li>
+            <li>先看风险结构，再看收益故事</li>
+          </ul>
+        </div>
+        <div class="grid">
+          <div class="card"><div class="metric">16</div><p>正式培训页数</p></div>
+          <div class="card"><div class="metric">3</div><p>地图：平台、产品、未来</p></div>
+          <div class="card"><div class="metric">2026</div><p>行业分水岭视角</p></div>
+        </div>
+      </div>
+      <div class="footer"><span>1 / 16</span><span>Frank 新版演讲 PPT 预览</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="eyebrow">为什么先讲体系</div>
+      <h2>为什么不是一上来就讲功能</h2>
+      <div class="sub">新员工最容易被名词淹没，但真正重要的不是记住术语，而是搞清楚产品之间的关系。</div>
+      <ul>
+        <li>用户不是为了某个按钮来交易所，而是为了完成一段完整旅程</li>
+        <li>这段旅程通常是：资金进入 → 交易 → 风险管理 → 收益获取</li>
+        <li>页面、功能、费率、风控，其实都在服务这条路径</li>
+        <li>先有地图，后面看任何模块都会快很多</li>
+      </ul>
+      <div class="footer"><span>2 / 16</span><span>先讲关系，再讲功能</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="eyebrow">平台地图</div>
+      <h2>一张图看懂交易所的业务地图</h2>
+      <div class="grid four">
+        <div class="card"><h3>资金层</h3><p>充值、提现、法币入金、P2P。没有资金进来，后面什么都不会发生。</p></div>
+        <div class="card"><h3>核心交易层</h3><p>现货、合约、理财。平台最基础的三根柱子。</p></div>
+        <div class="card"><h3>增强层</h3><p>跟单、网格、策略交易。把复杂能力做成更容易上手的产品壳。</p></div>
+        <div class="card"><h3>新方向</h3><p>稳定币、代币化资产、预测市场、链上金融连接。</p></div>
+      </div>
+      <div class="big-quote">交易所不是“买币卖币”的网站，而是流动性组织平台、风险承接平台、金融产品分发平台。</div>
+      <div class="footer"><span>3 / 16</span><span>平台真正组织的是资金与流动性</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="eyebrow">资金入口</div>
+      <h2>为什么资金入口是生命线</h2>
+      <div class="grid two">
+        <div class="card"><h3>用户视角</h3><p>首单体验决定他会不会继续交易。到账快不快、成功率高不高、路径顺不顺，直接决定转化。</p></div>
+        <div class="card"><h3>平台视角</h3><p>法币通道、支付、清结算、合规能力，决定平台增长上限，不是边缘模块。</p></div>
+      </div>
+      <ul>
+        <li>没有资金进来，现货和合约都只是空壳</li>
+        <li>资金入口解决的不是“充值功能”，而是“用户能不能开始”</li>
+        <li>越接近现实世界的支付和结算，平台天花板越高</li>
+      </ul>
+      <div class="footer"><span>4 / 16</span><span>资金入口决定首单体验</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="eyebrow">核心产品矩阵</div>
+      <h2>现货、合约、理财，分别在解决什么问题</h2>
+      <div class="grid">
+        <div class="card"><h3>现货</h3><p>最直观，买入并持有资产。适合方向判断与长期持有。</p></div>
+        <div class="card"><h3>合约</h3><p>放大价格判断和资金效率，也放大波动与风险。</p></div>
+        <div class="card"><h3>理财</h3><p>服务稳健收益与资产停泊需求，让闲置资金有去处。</p></div>
+      </div>
+      <ul>
+        <li>三类业务不是互相替代，而是共同组成基础产品矩阵</li>
+        <li>它们对应的是不同风险偏好，不是不同按钮皮肤</li>
+      </ul>
+      <div class="footer"><span>5 / 16</span><span>产品矩阵对应不同风险偏好</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="eyebrow">合约为什么重要</div>
+      <h2>为什么合约往往是交易所的核心业务</h2>
+      <ul>
+        <li>很多平台的交易量和利润，主要由合约驱动</li>
+        <li>原因不是它更高级，而是它更高频、更高杠杆、更能承接波动交易需求</li>
+        <li>它对流动性、撮合、风控、清算系统要求更高，所以更容易形成平台壁垒</li>
+        <li>合约是最考验系统能力的业务之一</li>
+      </ul>
+      <div class="footer"><span>6 / 16</span><span>高频、杠杆、系统壁垒</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="eyebrow">二级业务</div>
+      <h2>跟单、网格、策略交易为什么会出现</h2>
+      <div class="sub">一级业务是底层能力，二级业务是降低使用门槛的产品包装。</div>
+      <div class="grid two">
+        <div class="card"><h3>用户问题</h3><p>很多人不是不想交易，而是不知道怎么交易，不会判断，不会执行。</p></div>
+        <div class="card"><h3>平台做法</h3><p>把复杂交易能力封装成可直接使用的产品壳，降低专业门槛。</p></div>
+      </div>
+      <ul>
+        <li>跟单解决“我想参与，但我不会做决策”</li>
+        <li>网格解决“我看震荡，但我不想一直盯盘”</li>
+      </ul>
+      <div class="footer"><span>7 / 16</span><span>本质是降低专业能力门槛</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="eyebrow">产品本质</div>
+      <h2>现货、永续、交割，不只是名字不同</h2>
+      <div class="table">
+        <div class="cell head">产品</div><div class="cell head">核心特征</div><div class="cell head">适合谁</div><div class="cell head">关注点</div>
+        <div class="cell">现货</div><div class="cell">一手交钱，一手交货</div><div class="cell">入门和长期持有用户</div><div class="cell">方向判断</div>
+        <div class="cell">永续</div><div class="cell">锚定标的价格，无到期日</div><div class="cell">高频投机和杠杆用户</div><div class="cell">保证金与强平</div>
+        <div class="cell">交割</div><div class="cell">有期限结构，与现货可能有价差</div><div class="cell">专业用户与套利用户</div><div class="cell">期限与资金成本</div>
+      </div>
+      <div class="footer"><span>8 / 16</span><span>不同产品背后是不同风险结构</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="eyebrow">风险结构</div>
+      <h2>用户表面在选产品，本质上在选风险收益结构</h2>
+      <div class="grid two">
+        <div class="card"><h3>用户分层</h3><p>入门用户偏现货和简单理财，高频投机偏永续，稳健策略偏网格套利，专业用户才会深入交割和期权。</p></div>
+        <div class="card"><h3>平台职责</h3><p>平台不能只看收益故事，必须看风险暴露方式和收益曲线长什么样。</p></div>
+      </div>
+      <ul>
+        <li>现货收益通常更线性</li>
+        <li>合约会同时放大收益和亏损</li>
+        <li>组合策略会改变收益曲线形状</li>
+      </ul>
+      <div class="footer"><span>9 / 16</span><span>平台设计的是风险暴露方式</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="eyebrow">交易页面</div>
+      <h2>为什么交易页通常长这样</h2>
+      <div class="grid four">
+        <div class="card"><h3>标的信息</h3><p>先让用户知道自己在交易什么。</p></div>
+        <div class="card"><h3>K 线区</h3><p>多数用户先看行情，再做判断。</p></div>
+        <div class="card"><h3>深度与持仓</h3><p>交易前看流动性，交易后看风险敞口。</p></div>
+        <div class="card"><h3>下单区</h3><p>最后才是执行动作，不是页面中心唯一主角。</p></div>
+      </div>
+      <ul>
+        <li>页面不是 UI 拼凑，而是围绕交易决策路径设计</li>
+        <li>用户先判断，再执行，再管理持仓</li>
+      </ul>
+      <div class="footer"><span>10 / 16</span><span>交易页在服务决策路径</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="eyebrow">K线与流动性</div>
+      <h2>为什么 K 线、深度、滑点是交易页的中心</h2>
+      <ul>
+        <li>Crypto 交易里，技术面仍是多数用户的主要决策依据</li>
+        <li>用户以为自己只是在看价格，实际上也在承受流动性条件</li>
+        <li>深度越厚，滑点越小，大单越容易成交</li>
+        <li>流动性不仅影响体验，也影响大客户是否愿意进场</li>
+      </ul>
+      <div class="footer"><span>11 / 16</span><span>价格只是表面，流动性才是交易条件</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="eyebrow">订单与微观结构</div>
+      <h2>下单方式和 Maker / Taker，本质都在管理执行成本</h2>
+      <div class="grid two">
+        <div class="card"><h3>市价 / 限价 / 条件单</h3><p>快、准、自动化，三者不能同时极致。每种订单都有 trade-off。</p></div>
+        <div class="card"><h3>Maker / Taker</h3><p>Maker 提供流动性，Taker 消耗流动性。费率差不是福利设计，而是市场微观结构设计。</p></div>
+      </div>
+      <ul>
+        <li>手续费更低，不等于更适合你</li>
+        <li>散户、量化、大户，对 maker/taker 的偏好完全不同</li>
+      </ul>
+      <div class="footer"><span>12 / 16</span><span>平台在激励更厚的订单簿</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="eyebrow">账户体系演进</div>
+      <h2>为什么统一保证金 UTA 会成为行业标准</h2>
+      <ul>
+        <li>过去不同合约需要准备不同计价资产，用户体验很差</li>
+        <li>如果交易的是同一类风险，不该让用户准备三份钱</li>
+        <li>UTA 把折算和协同留给系统，让用户更聚焦交易本身</li>
+        <li>对平台来说，它还带来更高的资产利用效率和更集中的流动性</li>
+      </ul>
+      <div class="footer"><span>13 / 16</span><span>降低复杂度，集中流动性</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="eyebrow">2026 分水岭</div>
+      <h2>为什么这套内容放到 2026 年更重要</h2>
+      <div class="grid four">
+        <div class="card"><h3>稳定币扩张</h3><p>从交易媒介，升级为链上美元基础设施。</p></div>
+        <div class="card"><h3>Tokenization 落地</h3><p>从试验走向机构级部署与分发升级。</p></div>
+        <div class="card"><h3>预测市场升温</h3><p>从边缘产品，变成预期定价工具。</p></div>
+        <div class="card"><h3>监管边界澄清</h3><p>监管不再只是阻力，开始变成放大器。</p></div>
+      </div>
+      <div class="big-quote">今天理解交易所产品，不只是理解现货和合约，而是理解数字资产市场如何成为现实金融体系的新接口。</div>
+      <div class="footer"><span>14 / 16</span><span>行业从内循环走向外连接</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="eyebrow">未来地图</div>
+      <h2>稳定币、股票代币化、预测市场、监管，正在一起改写平台边界</h2>
+      <div class="grid four">
+        <div class="card"><h3>稳定币</h3><p>不只是支付工具，更像链上美元清算层。</p></div>
+        <div class="card"><h3>股票代币化</h3><p>把真实金融资产映射到新的交易与分发基础设施。</p></div>
+        <div class="card"><h3>预测市场</h3><p>把市场对未来的判断价格化，形成新的信息接口。</p></div>
+        <div class="card"><h3>监管</h3><p>更多原来上不了桌的业务，开始有机会进入制度化通道。</p></div>
+      </div>
+      <ul>
+        <li>未来竞争不只是“谁的币更多”，而是谁更能连接真实世界流动性</li>
+        <li>Crypto 正在接入现实资产、支付、事件和监管</li>
+      </ul>
+      <div class="footer"><span>15 / 16</span><span>从自循环市场走向金融基础设施</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="eyebrow">结尾</div>
+      <h2>回到平台视角，我们真正做的是什么</h2>
+      <div class="grid two">
+        <div class="card"><h3>平台长期竞争力</h3><p>资金入口能力、流动性组织能力、风险管理能力、新资产映射与分发能力、顺应监管演进的能力。</p></div>
+        <div class="card"><h3>给新员工的认知框架</h3><p>先把交易所看成一个完整金融系统。每个产品背后，对应一类用户需求、一种风险结构、一种流动性组织方式。</p></div>
+      </div>
+      <div class="big-quote">当 Crypto 开始承接真实资产、真实支付、真实预期，它就不再只是一个圈内市场，而是一层新的金融基础设施。</div>
+      <div class="footer"><span>16 / 16</span><span>Frank 新版演讲 PPT 预览</span></div>
+    </section>
+  </div>
+  <div class="dots" id="dots">1 / 16</div>
+  <div class="nav"><button onclick="prev()">上一页</button><button onclick="next()">下一页</button></div>
+  <script>
+    const slides=[...document.querySelectorAll('.slide')];
+    let i=0;
+    const dots=document.getElementById('dots');
+    function render(){slides.forEach((s,idx)=>s.classList.toggle('active',idx===i));dots.textContent=`${i+1} / ${slides.length}`;}
+    function next(){i=(i+1)%slides.length;render()}
+    function prev(){i=(i-1+slides.length)%slides.length;render()}
+    document.addEventListener('keydown',e=>{if(['ArrowRight','PageDown',' '].includes(e.key)) next(); if(['ArrowLeft','PageUp'].includes(e.key)) prev();});
+    render();
+  </script>
+</body>
+</html>
