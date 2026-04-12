@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>从交易所产品到现实世界连接</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=IBM+Plex+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #08111f;
+      --bg2: #0d1830;
+      --surface: rgba(18, 28, 51, 0.78);
+      --surface-strong: rgba(20, 32, 60, 0.95);
+      --surface-soft: rgba(102, 157, 246, 0.10);
+      --line: rgba(162, 190, 255, 0.18);
+      --text: #eef4ff;
+      --muted: #9db0d7;
+      --accent: #6fd3ff;
+      --accent2: #6effc7;
+      --accent3: #ffb86b;
+      --danger: #ff7a8a;
+      --shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
+      --display: 'Plus Jakarta Sans', 'IBM Plex Sans SC', system-ui, sans-serif;
+      --body: 'IBM Plex Sans SC', 'Plus Jakarta Sans', system-ui, sans-serif;
+      --mono: 'JetBrains Mono', ui-monospace, monospace;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; overflow: hidden; background: radial-gradient(circle at 15% 20%, #163052 0%, var(--bg) 40%), linear-gradient(135deg, #07101c, #0b1730 52%, #09111d 100%); color: var(--text); font-family: var(--body); }
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(circle at 85% 18%, rgba(111, 211, 255, 0.13), transparent 22%),
+        radial-gradient(circle at 18% 78%, rgba(110, 255, 199, 0.10), transparent 18%),
+        linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+      background-size: auto, auto, 56px 56px, 56px 56px;
+      pointer-events: none;
+      opacity: .9;
+    }
+    .deck { position: relative; height: 100vh; width: 100vw; }
+    .track {
+      display: flex;
+      height: 100%;
+      transition: transform .55s cubic-bezier(.22,.8,.2,1);
+      will-change: transform;
+    }
+    .slide {
+      flex: 0 0 100vw;
+      height: 100vh;
+      padding: 86px 72px 92px;
+      position: relative;
+      overflow: hidden;
+    }
+    .frame {
+      width: min(1220px, calc(100vw - 144px));
+      height: calc(100vh - 178px);
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      position: relative;
+      z-index: 2;
+    }
+    .eyebrow {
+      color: var(--accent);
+      font: 600 13px/1 var(--mono);
+      letter-spacing: .16em;
+      text-transform: uppercase;
+    }
+    .title {
+      margin: 0;
+      font-family: var(--display);
+      font-size: clamp(34px, 5vw, 64px);
+      line-height: 1.02;
+      letter-spacing: -.03em;
+    }
+    .subtitle { color: var(--muted); font-size: clamp(16px, 2vw, 22px); line-height: 1.5; max-width: 900px; }
+    .row { display: grid; gap: 18px; }
+    .cols-2 { grid-template-columns: 1.1fr .9fr; }
+    .cols-3 { grid-template-columns: repeat(3, 1fr); }
+    .cols-4 { grid-template-columns: repeat(4, 1fr); }
+    .card, .stat, .panel, .chipline, .table-shell {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(14px);
+    }
+    .card, .panel, .stat, .table-shell { padding: 22px 24px; }
+    .hero {
+      display: grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 26px;
+      align-items: stretch;
+      min-height: 100%;
+    }
+    .hero-panel {
+      background: linear-gradient(160deg, rgba(16,28,56,.94), rgba(10,18,36,.86));
+      border: 1px solid rgba(143,190,255,.16);
+      border-radius: 32px;
+      padding: 34px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+    .hero-panel::after {
+      content: '';
+      position: absolute;
+      right: -80px;
+      top: -80px;
+      width: 240px;
+      height: 240px;
+      background: radial-gradient(circle, rgba(111,211,255,.20), transparent 70%);
+      pointer-events: none;
+    }
+    .hero-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      align-content: end;
+    }
+    .chipline { display: flex; flex-wrap: wrap; gap: 10px; padding: 14px 16px; }
+    .chip {
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(150,184,255,.16);
+      background: rgba(255,255,255,.04);
+      color: #dbe8ff;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+    .kicker { color: var(--muted); font-size: 14px; line-height: 1.6; }
+    .big-quote {
+      font-family: var(--display);
+      font-size: clamp(24px, 3.2vw, 40px);
+      line-height: 1.18;
+      letter-spacing: -.02em;
+      max-width: 840px;
+    }
+    .metric {
+      padding: 18px 18px 16px;
+      border-radius: 22px;
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+      border: 1px solid rgba(169,194,255,.14);
+      min-height: 130px;
+    }
+    .metric .label { font: 500 12px/1.2 var(--mono); color: var(--muted); text-transform: uppercase; letter-spacing: .12em; }
+    .metric .value { margin-top: 14px; font-size: 30px; font-weight: 800; font-family: var(--display); }
+    .metric .note { margin-top: 8px; color: var(--muted); font-size: 14px; line-height: 1.5; }
+    .section-title { margin: 0; font-size: 30px; line-height: 1.15; font-family: var(--display); letter-spacing: -.02em; }
+    .section-intro { color: var(--muted); font-size: 17px; line-height: 1.6; max-width: 920px; }
+    .card h3, .panel h3, .stat h3 { margin: 0 0 10px; font-size: 20px; font-family: var(--display); }
+    .card p, .panel p, .stat p { margin: 0; color: var(--muted); line-height: 1.6; font-size: 15px; }
+    .list { margin: 14px 0 0; padding-left: 18px; color: var(--text); }
+    .list li { margin: 9px 0; line-height: 1.55; }
+    .muted { color: var(--muted); }
+    .accent { color: var(--accent); }
+    .accent2 { color: var(--accent2); }
+    .accent3 { color: var(--accent3); }
+    .danger { color: var(--danger); }
+    .path {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
+      margin-top: 10px;
+    }
+    .step {
+      padding: 18px 16px;
+      border-radius: 22px;
+      background: rgba(255,255,255,.05);
+      border: 1px solid rgba(160,185,255,.14);
+      position: relative;
+    }
+    .step .num { font: 700 13px/1 var(--mono); color: var(--accent2); letter-spacing: .10em; }
+    .step .name { margin-top: 14px; font-size: 18px; font-weight: 700; }
+    .step .detail { margin-top: 8px; color: var(--muted); font-size: 14px; line-height: 1.5; }
+    .step:not(:last-child)::after {
+      content: '→';
+      position: absolute;
+      right: -11px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: rgba(223,238,255,.42);
+      font-size: 18px;
+    }
+    .table-shell table { width: 100%; border-collapse: collapse; }
+    .table-shell th, .table-shell td { padding: 14px 12px; text-align: left; vertical-align: top; border-bottom: 1px solid rgba(160,185,255,.12); }
+    .table-shell th { color: var(--muted); font: 500 12px/1.2 var(--mono); letter-spacing: .12em; text-transform: uppercase; }
+    .table-shell tr:last-child td { border-bottom: none; }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(160,185,255,.14);
+      color: #dce7ff;
+      font-size: 13px;
+    }
+    .divider-slide {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+    .divider-box {
+      max-width: 980px;
+      padding: 52px 48px;
+      border-radius: 36px;
+      background: linear-gradient(180deg, rgba(13,24,48,.96), rgba(10,18,35,.90));
+      border: 1px solid rgba(151,189,255,.16);
+      box-shadow: var(--shadow);
+    }
+    .divider-box h2 { margin: 10px 0 20px; font-size: clamp(40px, 5vw, 72px); line-height: 1.02; font-family: var(--display); letter-spacing: -.04em; }
+    .divider-box p { margin: 0 auto; max-width: 760px; color: var(--muted); font-size: 20px; line-height: 1.6; }
+    .four-up { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+    .mini {
+      padding: 18px;
+      border-radius: 22px;
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(160,185,255,.14);
+      min-height: 164px;
+    }
+    .mini .top { font: 600 12px/1.2 var(--mono); color: var(--accent3); letter-spacing: .12em; text-transform: uppercase; }
+    .mini h4 { margin: 14px 0 8px; font-size: 20px; font-family: var(--display); }
+    .mini p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.55; }
+    .flywheel {
+      display: grid;
+      grid-template-columns: 1fr 320px 1fr;
+      gap: 18px;
+      align-items: center;
+      min-height: 420px;
+    }
+    .wheel-center {
+      border-radius: 999px;
+      width: 320px;
+      height: 320px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 36px;
+      background: radial-gradient(circle at 50% 50%, rgba(111,211,255,.22), rgba(11,20,38,.96) 60%);
+      border: 1px solid rgba(150,190,255,.18);
+      box-shadow: var(--shadow);
+    }
+    .wheel-center strong { font-size: 30px; line-height: 1.2; font-family: var(--display); display: block; }
+    .stack { display: grid; gap: 14px; }
+    .source-note {
+      margin-top: auto;
+      color: rgba(190,205,236,.86);
+      font-size: 12px;
+      line-height: 1.6;
+      font-family: var(--mono);
+    }
+    .topbar {
+      position: fixed;
+      top: 18px;
+      left: 28px;
+      right: 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 30;
+      pointer-events: none;
+    }
+    .topbar .brand, .topbar .counter {
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(8, 16, 31, 0.55);
+      border: 1px solid rgba(167,190,255,0.14);
+      backdrop-filter: blur(12px);
+      font: 500 12px/1 var(--mono);
+      letter-spacing: .10em;
+      color: #dbe9ff;
+    }
+    .controls {
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+      display: flex;
+      gap: 12px;
+      z-index: 30;
+    }
+    .btn {
+      width: 52px;
+      height: 52px;
+      border: 1px solid rgba(161,188,255,.16);
+      border-radius: 50%;
+      background: rgba(8, 16, 31, 0.72);
+      color: var(--text);
+      font-size: 20px;
+      cursor: pointer;
+      backdrop-filter: blur(12px);
+    }
+    .btn:hover { background: rgba(16, 28, 52, 0.94); }
+    .dots {
+      position: fixed;
+      left: 50%;
+      bottom: 30px;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 10px;
+      z-index: 30;
+      flex-wrap: wrap;
+      justify-content: center;
+      max-width: min(90vw, 900px);
+    }
+    .dot {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      border: 1px solid rgba(172,196,255,.24);
+      background: rgba(255,255,255,.12);
+      cursor: pointer;
+      transition: transform .2s ease, background .2s ease;
+    }
+    .dot.active { background: var(--accent); transform: scale(1.22); }
+    .helper {
+      position: fixed;
+      left: 28px;
+      bottom: 26px;
+      z-index: 30;
+      color: rgba(197,212,243,.78);
+      font-size: 12px;
+      font-family: var(--mono);
+      letter-spacing: .06em;
+    }
+    .closing-actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .closing-actions .card { min-height: 170px; }
+    @media (max-width: 1100px) {
+      .slide { padding: 84px 28px 110px; overflow-y: auto; }
+      .frame { width: calc(100vw - 56px); height: auto; min-height: calc(100vh - 194px); }
+      .hero, .cols-2, .cols-3, .cols-4, .four-up, .flywheel, .closing-actions, .path { grid-template-columns: 1fr; }
+      .wheel-center { width: 260px; height: 260px; }
+      .step:not(:last-child)::after { display: none; }
+      body, html { overflow: auto; }
+      .track { display: block; transform: none !important; }
+      .controls, .dots, .helper, .topbar .counter { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="deck">
+    <div class="topbar">
+      <div class="brand">FRANK / CRYPTO EXCHANGE TRAINING</div>
+      <div class="counter" id="counter">01 / 16</div>
+    </div>
+
+    <div class="track" id="track">
+      <section class="slide">
+        <div class="frame hero">
+          <div class="hero-panel">
+            <div class="eyebrow">新员工培训 / 2026 版</div>
+            <h1 class="title">从交易所产品到现实世界连接</h1>
+            <p class="subtitle">理解 Crypto 平台的产品逻辑、交易机制与行业演进。今天不是讲零散功能，而是讲一张完整地图。</p>
+            <div class="chipline" style="margin-top:20px;">
+              <span class="chip">产品体系</span>
+              <span class="chip">交易机制</span>
+              <span class="chip">UTA</span>
+              <span class="chip">Stablecoin</span>
+              <span class="chip">Tokenization</span>
+              <span class="chip">Prediction Markets</span>
+            </div>
+            <p class="big-quote" style="margin-top:28px;">交易所不是一个“买币卖币”的网站，而是一个<span class="accent">组织资金、流动性、风险偏好</span>，并逐步连接真实世界资产与支付系统的金融基础设施。</p>
+            <div class="source-note">Deck mode: HTML presentation · 适合口播演讲与在线分享</div>
+          </div>
+          <div class="hero-grid">
+            <div class="metric">
+              <div class="label">Narrative</div>
+              <div class="value">不是功能培训</div>
+              <div class="note">先建立业务地图，再理解页面、机制和行业机会。</div>
+            </div>
+            <div class="metric">
+              <div class="label">Audience</div>
+              <div class="value">新员工</div>
+              <div class="note">尤其适合非交易、非产品背景同学快速建立认知框架。</div>
+            </div>
+            <div class="metric">
+              <div class="label">Core lens</div>
+              <div class="value">用户旅程</div>
+              <div class="note">资金进入 → 交易执行 → 风险管理 → 收益获取 → 新资产连接。</div>
+            </div>
+            <div class="metric">
+              <div class="label">2026 shift</div>
+              <div class="value">现实世界接口</div>
+              <div class="note">稳定币、RWA、股票代币化、预测市场、监管重构正在改写平台边界。</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide">
+        <div class="frame">
+          <div>
+            <div class="eyebrow">01 / 为什么先讲体系</div>
+            <h2 class="section-title">先建立地图，后面页面和功能才看得懂</h2>
+            <p class="section-intro">新人最容易被术语淹没，但真正重要的不是记住多少名词，而是理解这些产品如何共同服务一段完整的资金旅程。</p>
+          </div>
+          <div class="path">
+            <div class="step"><div class="num">01</div><div class="name">资金进入</div><div class="detail">充值、提现、法币通道、P2P，决定首单体验。</div></div>
+            <div class="step"><div class="num">02</div><div class="name">交易执行</div><div class="detail">现货、合约、订单簿与撮合系统承接价格判断。</div></div>
+            <div class="step"><div class="num">03</div><div class="name">风险管理</div><div class="detail">保证金、杠杆、清算、滑点与流动性共同定义风险。</div></div>
+            <div class="step"><div class="num">04</div><div class="name">收益获取</div><div class="detail">理财、套利、网格、跟单等产品降低参与门槛。</div></div>
+            <div class="step"><div class="num">05</div><div class="name">真实世界连接</div><div class="detail">稳定币、RWA、预测市场让平台边界继续向外扩展。</div></div>
+          </div>
+          <div class="row cols-2">
+            <div class="panel">
+              <h3>为什么不能只讲按钮</h3>
+              <ul class="list">
+                <li>用户不是为了某个按钮来交易所，而是为了完成一整段金融动作。</li>
+                <li>页面只是界面，背后真正驱动的是<span class="accent">流动性、风险、清结算与分发能力</span>。</li>
+                <li>先有地图，后面讲 maker/taker、保证金、网格、RWA 才不会碎片化。</li>
+              </ul>
+            </div>
+            <div class="panel">
+              <h3>这场演讲的主线</h3>
+              <p class="big-quote" style="font-size:28px; margin-top:8px;">从“交易所卖什么产品”升级到“平台如何组织资金与现实世界连接”。</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide">
+        <div class="frame">
+          <div>
+            <div class="eyebrow">02 / 业务地图</div>
+            <h2 class="section-title">一张图看懂交易所到底在做什么</h2>
+            <p class="section-intro">交易所不是单一的买卖工具，而是多层结构叠加出来的流动性组织平台。</p>
+          </div>
+          <div class="row cols-4">
+            <div class="card"><h3>资金层</h3><p>充值、提现、法币入金、P2P。没有资金入口，后续所有交易都不会发生。</p></div>
+            <div class="card"><h3>核心交易层</h3><p>现货、永续、交割、理财。平台最核心的交易与资产承接能力都在这里。</p></div>
+            <div class="card"><h3>增强层</h3><p>跟单、网格、策略交易。把专业交易能力包装成更易使用的产品壳。</p></div>
+            <div class="card"><h3>新方向</h3><p>稳定币、RWA、股票代币化、预测市场。平台正在连接更广阔的现实世界流动性。</p></div>
+          </div>
+          <div class="row cols-2">
+            <div class="stat">
+              <h3>平台本质</h3>
+              <p>它同时在做三件事：</p>
+              <ul class="list">
+                <li>组织资金入口</li>
+                <li>组织价格发现与流动性</li>
+                <li>组织不同风险偏好的产品分发</li>
+              </ul>
+            </div>
+            <div class="stat">
+              <h3>对平台增长真正关键的，不只是币对数量</h3>
+              <ul class="list">
+                <li><span class="accent2">到账效率</span> 决定用户能不能开始交易</li>
+                <li><span class="accent2">深度与滑点</span> 决定大单能不能留在平台</li>
+                <li><span class="accent2">产品矩阵</span> 决定用户会不会走完整段资金旅程</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide">
+        <div class="frame">
+          <div>
+            <div class="eyebrow">03 / 核心产品体系</div>
+            <h2 class="section-title">现货、合约、理财，不是在堆 SKU，而是在承接不同风险偏好</h2>
+            <p class="section-intro">用户表面上是在选产品，本质上是在选一种风险收益结构和参与方式。</p>
+          </div>
+          <div class="row cols-3">
+            <div class="card"><h3>现货</h3><p><strong>最直观</strong>，买入并持有资产。适合认知门槛较低、风险偏好较稳的用户。</p><ul class="list"><li>线性收益</li><li>容易理解</li><li>适合作为第一站</li></ul></div>
+            <div class="card"><h3>合约</h3><p><strong>放大价格判断与资金效率</strong>。频次更高、杠杆更高，也更考验平台风控与清算能力。</p><ul class="list"><li>非线性风险</li><li>承接波动交易需求</li><li>是系统能力试金石</li></ul></div>
+            <div class="card"><h3>理财</h3><p><strong>服务资产停泊与稳健收益</strong>。本质上帮助用户在不交易时也有资产安排。</p><ul class="list"><li>降低闲置成本</li><li>承接保守资金</li><li>补全资金旅程</li></ul></div>
+          </div>
+          <div class="panel">
+            <h3>二级业务为什么会出现</h3>
+            <p>跟单、网格、策略交易并不是新的底层资产类别，而是对底层能力的再包装。用户不是不想交易，而是<span class="accent">不知道怎么交易</span>，所以平台把复杂策略做成可直接使用的产品壳。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide">
+        <div class="frame">
+          <div>
+            <div class="eyebrow">04 / 为什么合约是核心</div>
+            <h2 class="section-title">合约不是“更高级”，而是更考验系统能力</h2>
+            <p class="section-intro">很多交易所的主要交易量与利润来源都来自合约，因为它更高频、更高杠杆、更依赖微观结构与风控体系。</p>
+          </div>
+          <div class="row cols-4">
+            <div class="metric"><div class="label">Frequency</div><div class="value">更高频</div><div class="note">波动交易需求会被持续放大。</div></div>
+            <div class="metric"><div class="label">Capital efficiency</div><div class="value">更高杠杆</div><div class="note">资金效率提升，但风险暴露同步放大。</div></div>
+            <div class="metric"><div class="label">System</div><div class="value">更强风控</div><div class="note">撮合、风控、清算必须协同工作。</div></div>
+            <div class="metric"><div class="label">Moat</div><div class="value">更深壁垒</div><div class="note">系统复杂度越高，平台护城河越深。</div></div>
+          </div>
+          <div class="row cols-2">
+            <div class="panel">
+              <h3>为什么交割合约用户更少但仍然重要</h3>
+              <ul class="list">
+                <li>理解门槛更高，不符合普通散户直觉。</li>
+                <li>但适合做期限管理、资金成本管理和组合策略。</li>
+                <li>很多专业产品天生就是给少数高价值用户准备的。</li>
+              </ul>
+            </div>
+            <div class="panel">
+              <h3>一句话结论</h3>
+              <p class="big-quote" style="font-size:32px; margin-top:8px;">合约业务越强，越说明这个平台不是“界面做得像交易所”，而是真的具备<span class="accent3">金融系统级能力</span>。</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide">
+        <div class="frame">
+          <div>
+            <div class="eyebrow">05 / 用户与风险结构</div>
+            <h2 class="section-title">用户行为和产品结构，是互相定义的</h2>
+            <p class="section-intro">产品设计的本质不是做更多入口，而是让不同类型的用户找到适合自己的风险暴露方式。</p>
+          </div>
+          <div class="table-shell">
+            <table>
+              <thead>
+                <tr><th>用户层级</th><th>典型诉求</th><th>偏好产品</th><th>平台设计重点</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><strong>入门用户</strong></td><td>先能买、先看懂、先不犯大错</td><td>现货、简单理财</td><td>低门槛引导、清晰风控提示、首单成功率</td></tr>
+                <tr><td><strong>高频投机用户</strong></td><td>更快表达方向、更高资金效率</td><td>永续合约、条件单</td><td>低延迟、深度、止盈止损、稳定撮合</td></tr>
+                <tr><td><strong>稳健策略用户</strong></td><td>更平滑收益曲线</td><td>网格、套利、组合策略</td><td>策略包装、收益解释、回撤管理</td></tr>
+                <tr><td><strong>专业用户 / 机构</strong></td><td>组合管理、成本控制、跨品种配置</td><td>交割、期权、统一保证金</td><td>账户体系、保证金效率、风控与 API 能力</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="panel">
+            <h3>结论</h3>
+            <p>用户表面上是在选产品，本质上是在选<span class="accent2">风险收益曲线</span>。平台设计产品，不是在堆功能，而是在设计用户可承受、可理解、可执行的风险结构。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide">
+        <div class="frame">
+          <div>
+            <div class="eyebrow">06 / 交易页面与机制</div>
+            <h2 class="section-title">为什么交易页长成这样</h2>
+            <p class="section-intro">交易页不是 UI 拼凑，而是围绕用户的交易决策路径组织：先看行情，再看深度，再下单，再管理持仓。</p>
+          </div>
+          <div class="row cols-2">
+            <div class="panel">
+              <h3>交易决策路径</h3>
+              <div class="path" style="grid-template-columns:1fr; gap:12px; margin-top:14px;">
+                <div class="step"><div class="num">A</div><div class="name">看标的与 K 线</div><div class="detail">Crypto 决策高度依赖价格行为和技术面。</div></div>
+                <div class="step"><div class="num">B</div><div class="name">看深度与买卖盘</div><div class="detail">用户以为在看价格，实际也在承受流动性条件。</div></div>
+                <div class="step"><div class="num">C</div><div class="name">执行订单</div><div class="detail">市价、限价、条件单分别适配不同交易场景。</div></div>
+                <div class="step"><div class="num">D</div><div class="name">管理持仓</div><div class="detail">盈亏、杠杆、保证金、清算价共同影响后续动作。</div></div>
+              </div>
+            </div>
+            <div class="panel">
+              <h3>页面核心模块</h3>
+              <ul class="list">
+                <li><strong>K 线区</strong>，是交易页中心，因为多数用户先基于价格行为做判断。</li>
+                <li><strong>Order Book / 深度</strong>，告诉用户这不是一个“理论价格”，而是一个有流动性约束的市场。</li>
+                <li><strong>下单区</strong>，负责把判断转成执行。</li>
+                <li><strong>持仓区</strong>，负责把执行转成风险管理。</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide">
+        <div class="frame">
+          <div>
+            <div class="eyebrow">07 / 市场微观结构</div>
+            <h2 class="section-title">订单类型与 Maker / Taker，本质是在做流动性激励</h2>
+            <p class="section-intro">没有哪种订单类型是绝对最好的，只有在不同流动性条件和交易目标下更适配的选择。</p>
+          </div>
+          <div class="row cols-2">
+            <div class="card">
+              <h3>订单类型</h3>
+              <ul class="list">
+                <li><strong>市价单</strong>，快，但可能吃到更差价格。</li>
+                <li><strong>限价单</strong>，价格可控，但不一定能成交。</li>
+                <li><strong>条件单</strong>，自动化执行，但依赖触发逻辑与系统稳定性。</li>
+              </ul>
+            </div>
+            <div class="card">
+              <h3>Maker / Taker</h3>
+              <ul class="list">
+                <li><strong>Maker</strong> 提供流动性，所以手续费更低。</li>
+                <li><strong>Taker</strong> 消耗流动性，所以手续费更高。</li>
+                <li>这不是简单费率差，而是订单簿健康度的设计。</li>
+              </ul>
+            </div>
+          </div>
+          <div class="row cols-3">
+            <div class="mini"><div class="top">Execution</div><h4>快，不等于好</h4><p>市价单适合抢时间，但会暴露在滑点之下。</p></div>
+            <div class="mini"><div class="top">Liquidity</div><h4>便宜，不等于适合你</h4><p>Maker 虽然便宜，但也可能错过行情或被动成交。</p></div>
+            <div class="mini"><div class="top">Structure</div><h4>平台在设计市场</h4><p>平台希望深度更厚、报价更稳、可承接更大体量。</p></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide">
+        <div class="frame">
+          <div>
+            <div class="eyebrow">08 / 账户体系演进</div>
+            <h2 class="section-title">统一保证金账户，解决的不是一个功能点，而是一整类复杂度</h2>
+            <p class="section-intro">如果用户只是交易同一个标的，不应该因为合约类型不同而准备三份资金。UTA 的价值，在于让系统承担复杂度，用户只关心交易本身。</p>
+          </div>
+          <div class="row cols-2">
+            <div class="panel">
+              <h3>过去：分散保证金</h3>
+              <ul class="list">
+                <li>不同产品要切不同资产池</li>
+                <li>资金频繁搬家，使用体验很差</li>
+                <li>跨产品协同弱，流动性也被切碎</li>
+              </ul>
+            </div>
+            <div class="panel">
+              <h3>现在：统一保证金</h3>
+              <ul class="list">
+                <li>系统完成折算，用户聚焦交易机会</li>
+                <li>资产利用率更高</li>
+                <li>为组合保证金、跨品种风控打基础</li>
+              </ul>
+            </div>
+          </div>
+          <div class="row cols-3">
+            <div class="metric"><div class="label">User</div><div class="value">更简单</div><div class="note">降低理解成本和操作切换。</div></div>
+            <div class="metric"><div class="label">Platform</div><div class="value">更集中</div><div class="note">流动性、保证金与风险口径更统一。</div></div>
+            <div class="metric"><div class="label">Future</div><div class="value">更可扩展</div><div class="note">多产品协同能力与账户体系延展空间更大。</div></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide divider-slide">
+        <div class="frame" style="justify-content:center;">
+          <div class="divider-box">
+            <div class="eyebrow" style="justify-content:center; color:var(--accent2);">09 / 行业演进</div>
+            <h2>2026 是分水岭</h2>
+            <p>如果几年前这套培训主要在讲 Crypto 内循环，那到了 2026，交易所产品已经开始承接<span class="accent">更大的资金池</span>、<span class="accent2">更复杂的资产类型</span>与<span class="accent3">更明确的监管框架</span>。</p>
+            <div class="chipline" style="margin-top:26px; justify-content:center; background:transparent; border:none; box-shadow:none; backdrop-filter:none; padding:0;">
+              <span class="badge">稳定币规模继续扩张</span>
+              <span class="badge">Tokenization 进入机构部署</span>
+              <span class="badge">预测市场升级为预期接口</span>
+              <span class="badge">监管从阻力转向放大器</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide">
+        <div class="frame">
+          <div>
+            <div class="eyebrow">10 / Stablecoin</div>
+            <h2 class="section-title">稳定币，已经从交易媒介升级成链上美元基础设施</h2>
+            <p class="section-intro">它既服务交易，也开始服务支付、结算、跨境转移和资金停泊。当稳定币规模继续扩大，交易所天然会成为链上美元流动性的分发节点。</p>
+          </div>
+          <div class="four-up">
+            <div class="mini"><div class="top">Pricing</div><h4>计价工具</h4><p>仍然是大多数链上交易最稳定的报价锚。</p></div>
+            <div class="mini"><div class="top">Settlement</div><h4>清算层</h4><p>开始承接支付、结算与跨境转移职能。</p></div>
+            <div class="mini"><div class="top">Treasury</div><h4>资金停泊</h4><p>在高波动市场里提供更可控的资产停靠点。</p></div>
+            <div class="mini"><div class="top">Distribution</div><h4>平台入口</h4><p>交易所会成为链上美元流动性的核心分发节点。</p></div>
+          </div>
+          <div class="row cols-2">
+            <div class="panel">
+              <h3>为什么重要</h3>
+              <p>过去更常说“稳定币是交易媒介”，现在更准确的说法是：<span class="accent2">稳定币是链上美元基础设施</span>。这意味着平台能力正在从交易扩展到更广义的金融流转。</p>
+            </div>
+            <div class="panel">
+              <h3>背景数据</h3>
+              <p>Forbes 在 2026 年初提到，稳定币市场在 2025 年从约 2060 亿美元增长到超过 3000 亿美元，可作为行业扩张背景参考。</p>
+            </div>
+          </div>
+          <div class="source-note">Sources: Forbes 2026/01/02 · Cleary Gottlieb 2026 Digital Assets Regulatory Update</div>
+        </div>
+      </section>
+
+      <section class="slide">
+        <div class="frame">
+          <div>
+            <div class="eyebrow">11 / Tokenization & RWA</div>
+            <h2 class="section-title">股票代币化与 RWA，最能帮助新人理解“Crypto 正在连接真实世界资产”</h2>
+            <p class="section-intro">关键不在 token 本身，而在持牌机构、真实底层资产、映射关系、审计与流动性组织。这不是“发一个概念币”，而是金融资产发行和交易结构的再包装。</p>
+          </div>
+          <div class="path">
+            <div class="step"><div class="num">01</div><div class="name">真实资产</div><div class="detail">底层是股票、基金、黄金等现实金融资产。</div></div>
+            <div class="step"><div class="num">02</div><div class="name">持牌托管</div><div class="detail">必须有合法持有与审计安排。</div></div>
+            <div class="step"><div class="num">03</div><div class="name">链上映射</div><div class="detail">把资产权益包装成可交易 token。</div></div>
+            <div class="step"><div class="num">04</div><div class="name">交易分发</div><div class="detail">由平台提供流动性入口与用户触达。</div></div>
+            <div class="step"><div class="num">05</div><div class="name">价格锚定</div><div class="detail">交易的是 token，锚定的是现实世界资产。</div></div>
+          </div>
+          <div class="row cols-2">
+            <div class="panel"><h3>为什么会成为重点叙事</h3><p>它天然连接两大存量市场：传统证券市场与 Crypto 用户流量。对交易所来说，这不仅是新资产类别，更是<span class="accent">新流动性入口</span>与<span class="accent2">新用户教育入口</span>。</p></div>
+            <div class="panel"><h3>市场预期</h3><p>CoinDesk 2026 年 1 月报道引用市场观点，tokenized assets 可能在 2026 年向 4000 亿美元级别逼近，说明市场对这一赛道的预期明显抬升。</p></div>
+          </div>
+          <div class="source-note">Sources: CoinDesk 2026/01/17, 2026/01/19 · Fortune 2026/03/16 · Latham & Watkins US Crypto Policy Tracker</div>
+        </div>
+      </section>
+
+      <section class="slide">
+        <div class="frame">
+          <div>
+            <div class="eyebrow">12 / Prediction Markets + Regulation</div>
+            <h2 class="section-title">未来不只在交易资产，也在交易对未来的判断</h2>
+            <p class="section-intro">预测市场的重要性，不在于它是不是一个“新赌场”，而在于它正在成为把集体预期组织成价格信号的新基础设施。与此同时，监管也开始从单纯阻力，转向制度化放大器。</p>
+          </div>
+          <div class="row cols-2">
+            <div class="card">
+              <h3>预测市场的意义</h3>
+              <ul class="list">
+                <li>把市场对未来事件的判断价格化</li>
+                <li>从边缘工具转向信息聚合市场</li>
+                <li>对平台提出新要求：抵押品、真值裁决、交易引擎与结算能力</li>
+              </ul>
+            </div>
+            <div class="card">
+              <h3>监管变化的意义</h3>
+              <ul class="list">
+                <li>2025-2026 的一个重要变化，是监管开始更强调边界澄清与框架重建</li>
+                <li>这会直接影响稳定币、tokenized assets、银行参与和创新空间</li>
+                <li>对交易所来说，更多过去“不能上桌”的业务开始有制度化通道</li>
+              </ul>
+            </div>
+          </div>
+          <div class="row cols-3">
+            <div class="mini"><div class="top">Signal</div><h4>预期价格化</h4><p>市场开始把对未来事件的判断，压缩成即时价格信号。</p></div>
+            <div class="mini"><div class="top">Trust</div><h4>制度化增强</h4><p>监管不再只是风险警报，也开始承认基础设施价值。</p></div>
+            <div class="mini"><div class="top">Expansion</div><h4>业务边界外扩</h4><p>交易所未来可能承接更复杂的真实事件与真实资产场景。</p></div>
+          </div>
+          <div class="source-note">Sources: CoinDesk 2026/04/06 · Cleary Gottlieb 2026 update · Latham & Watkins updated April 2026</div>
+        </div>
+      </section>
+
+      <section class="slide">
+        <div class="frame">
+          <div>
+            <div class="eyebrow">13 / 现实世界连接</div>
+            <h2 class="section-title">Crypto 正在通过 4 个接口更深地融入现实世界</h2>
+            <p class="section-intro">行业未来最大的机会，不在于再多几个币种，而在于谁能更有效地连接真实世界资产、支付、事件与机构资金。</p>
+          </div>
+          <div class="row cols-4">
+            <div class="card"><h3>美元 → 稳定币</h3><p>现实美元体系在链上的延伸，连接交易、支付与结算。</p></div>
+            <div class="card"><h3>股票 / 基金 / 黄金 → Tokenized assets</h3><p>把现实资产映射到更高效的分发与交易基础设施。</p></div>
+            <div class="card"><h3>宏观 / 政治 / 事件 → Prediction markets</h3><p>把对未来的判断组织成可交易、可观察的概率与价格。</p></div>
+            <div class="card"><h3>银行 / 券商 / 资管 → 新基础设施</h3><p>更多传统金融机构开始进入数字资产与 tokenization 体系。</p></div>
+          </div>
+          <div class="panel">
+            <h3>一句话</h3>
+            <p class="big-quote" style="font-size:30px; margin-top:8px;">早期 Crypto 更像自循环市场。现在，它在接入现实世界的资产、支付、事件和监管。一旦接进来，它就不再只是一个圈内市场，而更像一层新的金融基础设施。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide">
+        <div class="frame">
+          <div>
+            <div class="eyebrow">14 / 平台长期竞争力</div>
+            <h2 class="section-title">平台真正长期在做的，不是上更多交易对，而是组织一个系统</h2>
+            <p class="section-intro">长期竞争力来自系统能力，而不是单点功能。谁更能组织资金、流动性、风险与制度化接口，谁就更接近下一阶段的平台形态。</p>
+          </div>
+          <div class="flywheel">
+            <div class="stack">
+              <div class="card"><h3>资金入口能力</h3><p>入金、出金、法币通道、清结算效率决定用户能不能开始。</p></div>
+              <div class="card"><h3>流动性组织能力</h3><p>深度、撮合、订单簿健康度决定用户愿不愿意留下。</p></div>
+            </div>
+            <div class="wheel-center"><div><strong>平台飞轮</strong><span class="muted">资金进入 → 流动性聚集 → 风控能力提升 → 更多产品承接 → 更多用户与资产类型</span></div></div>
+            <div class="stack">
+              <div class="card"><h3>风险管理能力</h3><p>保证金、杠杆、清算、账户体系是平台内功。</p></div>
+              <div class="card"><h3>新资产与监管适配能力</h3><p>决定平台能否从 Crypto 内循环走向真实世界连接。</p></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide">
+        <div class="frame">
+          <div>
+            <div class="eyebrow">15 / 回到平台视角</div>
+            <h2 class="section-title">给新员工的最终认知框架</h2>
+            <p class="section-intro">先把交易所看成一个完整金融系统，不要只盯着单个页面或单个按钮。</p>
+          </div>
+          <div class="closing-actions">
+            <div class="card"><h3>看平台，不要只看功能</h3><p>每个按钮背后，对应的是一段用户旅程、一种流动性安排和一套风控逻辑。</p></div>
+            <div class="card"><h3>看产品，不要只看名字</h3><p>现货、合约、理财、策略，本质上都在承接不同的风险偏好和收益诉求。</p></div>
+            <div class="card"><h3>看未来，不要只看币圈内部</h3><p>行业最大的机会，在于把 Crypto 能力与真实世界的资产、支付、事件、监管更深地连接起来。</p></div>
+          </div>
+          <div class="panel">
+            <h3>一句话收束</h3>
+            <p class="big-quote" style="font-size:34px; margin-top:8px;">我们真正做的，不是把更多功能堆到页面里，而是在组织资金、组织流动性、组织风险偏好，并把这些能力接到现实世界。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide">
+        <div class="frame">
+          <div>
+            <div class="eyebrow">16 / Closing</div>
+            <h2 class="section-title">结论与参考</h2>
+            <p class="section-intro">如果把这套内容讲透，新员工拿到的不是一份功能说明书，而是一张平台地图、行业地图和未来地图。</p>
+          </div>
+          <div class="row cols-2">
+            <div class="panel">
+              <h3>三句结论</h3>
+              <ul class="list">
+                <li>交易所是一个完整金融系统，不是单纯的买卖界面。</li>
+                <li>每个产品背后都对应一类用户需求、一种风险结构和一种流动性组织方式。</li>
+                <li>未来最大机会，在于谁能把 Crypto 与真实世界金融体系连接得更深、更稳、更制度化。</li>
+              </ul>
+            </div>
+            <div class="panel">
+              <h3>参考来源</h3>
+              <ul class="list">
+                <li>Forbes, 2026/01/02, 5 Trends Crypto Investors Can’t Ignore In 2026</li>
+                <li>CoinDesk, 2026/01/17 & 2026/01/19, tokenized assets 系列报道</li>
+                <li>CoinDesk, 2026/04/06, Polymarket exchange upgrade</li>
+                <li>Cleary Gottlieb, 2026 Digital Assets Regulatory Update</li>
+                <li>Latham & Watkins, US Crypto Policy Tracker, updated April 2026</li>
+                <li>Fortune, 2026/03/16, tokenized stocks 专题</li>
+              </ul>
+            </div>
+          </div>
+          <div class="panel">
+            <h3>演讲者提示</h3>
+            <p>建议口播时保留 Frank 原有风格，用生活化类比解释复杂术语，比如把挂单类比成“摆摊等成交”，把统一保证金类比成“钱包统一结算”，把 tokenization 解释成“把现实资产搬到新的分发渠道和交易接口”。</p>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div class="controls">
+      <button class="btn" id="prev" aria-label="上一页">←</button>
+      <button class="btn" id="next" aria-label="下一页">→</button>
+    </div>
+    <div class="dots" id="dots"></div>
+    <div class="helper">← / → 切页 · Space 下一页</div>
+  </div>
+
+  <script>
+    const slides = Array.from(document.querySelectorAll('.slide'));
+    const track = document.getElementById('track');
+    const counter = document.getElementById('counter');
+    const dotsWrap = document.getElementById('dots');
+    let index = 0;
+    slides.forEach((_, i) => {
+      const d = document.createElement('button');
+      d.className = 'dot' + (i === 0 ? ' active' : '');
+      d.addEventListener('click', () => go(i));
+      dotsWrap.appendChild(d);
+    });
+    const dots = Array.from(document.querySelectorAll('.dot'));
+    function render() {
+      track.style.transform = `translateX(-${index * 100}vw)`;
+      counter.textContent = `${String(index + 1).padStart(2, '0')} / ${String(slides.length).padStart(2, '0')}`;
+      dots.forEach((d, i) => d.classList.toggle('active', i === index));
+    }
+    function go(i) {
+      index = Math.max(0, Math.min(slides.length - 1, i));
+      render();
+    }
+    document.getElementById('prev').addEventListener('click', () => go(index - 1));
+    document.getElementById('next').addEventListener('click', () => go(index + 1));
+    window.addEventListener('keydown', (e) => {
+      if (window.innerWidth <= 1100) return;
+      if (['ArrowRight', 'PageDown', ' '].includes(e.key)) { e.preventDefault(); go(index + 1); }
+      if (['ArrowLeft', 'PageUp'].includes(e.key)) { e.preventDefault(); go(index - 1); }
+      if (e.key === 'Home') go(0);
+      if (e.key === 'End') go(slides.length - 1);
+    });
+    let wheelLock = false;
+    window.addEventListener('wheel', (e) => {
+      if (window.innerWidth <= 1100 || wheelLock) return;
+      if (Math.abs(e.deltaY) < 20) return;
+      wheelLock = true;
+      go(index + (e.deltaY > 0 ? 1 : -1));
+      setTimeout(() => wheelLock = false, 700);
+    }, { passive: true });
+    render();
+  </script>
+</body>
+</html>
